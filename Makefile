@@ -1,4 +1,4 @@
-all: basic NTupleProcessing UniverseMaker Plotting Unfolding
+all: basic NTupleProcessing UniverseMaker Plotting Unfolding Scripts
 
 basic: stv_root_dict.o
 	make -C Utils
@@ -21,6 +21,8 @@ Plotting: basic
 
 Unfolding: basic
 	make -C Unfolding
+Scripts: basic
+	make -C Scripts
 
 #https://root-forum.cern.ch/t/cannot-find-my-rdict-pcm-files/21901
 #Seems like the stv_root_dict_rdict.pcm file is expected to be within the file where the binary is built
@@ -32,10 +34,10 @@ stv_root_dict.o:
 	-fPIC -o stv_root_dict.o -c stv_root_dict.cc
 	$(RM) stv_root_dict.cc
 
-	cp stv_root_dict.o Bin/
+	cp stv_root_dict.o obj/
 
 clean:
-	make clean -C Bin
+	make clean -C obj
 
 	make clean -C Utils
 	make clean -C Selections
@@ -45,3 +47,4 @@ clean:
 	make clean -C Unfolding
 
 	$(RM) stv_root_dict.o stv_root_dict_rdict.pcm
+	$(RM) bin/*

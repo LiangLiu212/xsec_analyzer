@@ -1,5 +1,5 @@
 all: STV_Tools.o
-	mv *.o $(STV_ANALYSIS_DIR)/Bin	
+	mv *.o $(STV_ANALYSIS_DIR)/obj
 
 %.o:%.cxx
 	$(CXX) $(shell root-config --cflags --libs) -O3 -I$(STV_ANALYSIS_DIR)/Utils/Includes -c -o $@ $^

@@ -19,11 +19,11 @@
 #include "TPad.h"
 
 // STV analysis includes
-#include "../EventCategory.hh"
-#include "../FiducialVolume.hh"
-#include "../FilePropertiesManager.hh"
-#include "../HistUtils.hh"
-#include "../PlotUtils.hh"
+#include "../../Utils/Includes/EventCategory.hh"
+#include "../../Utils/Includes/FiducialVolume.hh"
+#include "../../Utils/Includes/FilePropertiesManager.hh"
+#include "../../Utils/Includes/HistUtils.hh"
+#include "../../Utils/Includes/PlotUtils.hh"
 
 // Abbreviation to make using the enum class easier
 using NFT = NtupleFileType;

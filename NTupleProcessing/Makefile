@@ -1,7 +1,8 @@
 all: ProcessNTuples
 
 ProcessNTuples: ProcessNTuples.C
-	$(CXX) $(shell root-config --cflags --libs) -O3 -I. -I$(STV_ANALYSIS_DIR)/Selections -I$(STV_ANALYSIS_DIR)/Utils/STV_Tools -I$(STV_ANALYSIS_DIR)/Utils/Includes $(STV_ANALYSIS_DIR)/Bin/*.o -o $@ $^
+	$(CXX) $(shell root-config --cflags --libs) -O3 -I. -I$(STV_ANALYSIS_DIR)/Selections -I$(STV_ANALYSIS_DIR)/Utils/STV_Tools -I$(STV_ANALYSIS_DIR)/Utils/Includes $(STV_ANALYSIS_DIR)/obj/*.o -o $@ $^
+	mv ProcessNTuples $(STV_ANALYSIS_DIR)/bin
 
 clean:
 	$(RM) ProcessNTuples

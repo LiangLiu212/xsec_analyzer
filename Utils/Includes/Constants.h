@@ -24,13 +24,22 @@ constexpr int CHARGED_CURRENT = 0;
 constexpr int NEUTRAL_CURRENT = 1;
 
 // Useful PDG codes
+constexpr int ELECTRON = 11;
 constexpr int ELECTRON_NEUTRINO = 12;
 constexpr int MUON = 13;
 constexpr int MUON_NEUTRINO = 14;
+
+constexpr int ANTI_ELECTRON = -11;
+constexpr int ANTI_ELECTRON_NEUTRINO = -12;
+constexpr int ANTI_MUON = -13;
+constexpr int ANTI_MUON_NEUTRINO = -14;
+
 constexpr int TAU_NEUTRINO = 16;
 constexpr int PROTON = 2212;
+constexpr int NEUTRON = 2112;
 constexpr int PI_ZERO = 111;
 constexpr int PI_PLUS = 211;
+constexpr int GAMMA = 22;
 
 // Values of parameters to use in analysis cuts
 constexpr float DEFAULT_PROTON_PID_CUT = 0.2;
@@ -64,6 +73,7 @@ constexpr double NEUTRON_MASS = 0.93956541; // GeV
 constexpr double PROTON_MASS = 0.93827208; // GeV
 constexpr double MUON_MASS = 0.10565837; // GeV
 constexpr double PI_PLUS_MASS = 0.13957000; // GeV
+constexpr double ETA_MASS = 0.547450; // GeV
 
 // This binding energy value is used in GENIE v3.0.6
 //constexpr double BINDING_ENERGY = 0.0295; // 40Ar, GeV

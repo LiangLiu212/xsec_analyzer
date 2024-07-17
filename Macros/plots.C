@@ -17,14 +17,14 @@
 #include "TPad.h"
 
 // STV analysis includes
-#include "EventCategory.hh"
-#include "FiducialVolume.hh"
-#include "FilePropertiesManager.hh"
-#include "HistUtils.hh"
-#include "PlotUtils.hh"
+#include "../Utils/Includes/EventCategory.hh"
+#include "../Utils/Includes/FiducialVolume.hh"
+#include "../Utils/Includes/FilePropertiesManager.hh"
+#include "../Utils/Includes/HistUtils.hh"
+#include "../Utils/Includes/PlotUtils.hh"
 
 // Abbreviation to make using the enum class easier
-using NFT = NtupleFileType;
+using NFT = texpr std::array< NFT, 3 > mc_file_types = { NFT::kNumuMC,// Consider samples for data taken with the beam on, data taken with the beam// off, and CV MC samples for numus, intrinsic nues, and dirt eventstupleFileType;
 
 void make_plots( const std::string& branchexpr, const std::string& selection,
   const std::set<int>& runs, std::vector<double> bin_low_edges,
@@ -412,10 +412,7 @@ void plots() {
 
 
   make_plots( "topological_score",
-    "sel_reco_vertex_in_FV && sel_pfp_starts_in_PCV && sel_has_muon_candidate"
-    " && sel_no_reco_showers && sel_muon_above_threshold"
-    "  && sel_has_p_candidate && sel_passed_proton_pid_cut"
-    "  && sel_protons_contained && sel_lead_p_passed_mom_cuts",
+    "sel_reco_vertex_in_FV && sel_pfp_starts_in_PCV",
     std::set<int>{1}, 0., 1., 40, "topological score", "events", "Run 1" );
 
   //make_plots( "reco_nu_vtx_sce_z", sel_CCNpi, std::set<int>{1}, FV_Z_MIN,
