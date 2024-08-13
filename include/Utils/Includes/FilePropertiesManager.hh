@@ -16,6 +16,8 @@ enum class NtupleFileType {
   // Data taken with the beam on
   kOnBNB,
 
+  // Open data for blind analysis, 1/3 of Data
+  kOpenBNB,
 
   // Data taken with the beam off
   kExtBNB,
@@ -43,6 +45,20 @@ enum class NtupleFileType {
   kDetVarMCWMYZ, // wireMod YZ
   kDetVarMCCVExtra, // alternate CV for small samples
 
+  // *** Intrinsic Nue DetVar MC ***
+  kNueDetVarMCCV, // Intrinsic Nue  central value
+  kNueDetVarMCLYatten, // Intrinsic Nue  light-yield attenuation
+  kNueDetVarMCLYdown, // Intrinsic Nue  light-yield down
+  kNueDetVarMCLYrayl, // Intrinsic Nue  light-yield Rayleigh scattering
+  kNueDetVarMCRecomb2, // Intrinsic Nue  light-yield recombination 2
+  kNueDetVarMCSCE, // Intrinsic Nue  space charge effect
+  kNueDetVarMCWMAngleXZ, // Intrinsic Nue  wireMod angle XZ
+  kNueDetVarMCWMAngleYZ, // Intrinsic Nue  wireMod angle YZ
+  kNueDetVarMCWMdEdx, // Intrinsic Nue  wireMod dE/dx
+  kNueDetVarMCWMX, // Intrinsic Nue  wireMod X
+  kNueDetVarMCWMYZ, // Intrinsic Nue  wireMod YZ
+  kNueDetVarMCCVExtra, // Intrinsic Nue  alternate CV for small samples
+
   // An alternate CV MC simulation
   kAltCVMC,
 
@@ -68,13 +84,29 @@ bool ntuple_type_is_detVar( const NtupleFileType& type ) {
   return false;
 }
 
+bool ntuple_type_is_nuedetVar( const NtupleFileType& type){
+  constexpr std::array< NtupleFileType, 12 > nuedetVar_types = {
+    NtupleFileType::kNueDetVarMCCV, NtupleFileType::kNueDetVarMCLYatten,
+    NtupleFileType::kNueDetVarMCLYdown, NtupleFileType::kNueDetVarMCLYrayl,
+    NtupleFileType::kNueDetVarMCRecomb2, NtupleFileType::kNueDetVarMCSCE,
+    NtupleFileType::kNueDetVarMCWMAngleXZ, NtupleFileType::kNueDetVarMCWMAngleYZ,
+    NtupleFileType::kNueDetVarMCWMdEdx, NtupleFileType::kNueDetVarMCWMX,
+    NtupleFileType::kNueDetVarMCWMYZ, NtupleFileType::kNueDetVarMCCVExtra
+  };
+  const auto begin = nuedetVar_types.cbegin();
+  const auto end = nuedetVar_types.cend();
+  const auto iter = std::find( begin, end, type );
+  if ( iter != end ) return true;
+  return false;
+}
+
 bool ntuple_type_is_altCV( const NtupleFileType& type ) {
   if ( type == NtupleFileType::kAltCVMC ) return true;
   return false;
 }
 
 bool ntuple_type_is_mc( const NtupleFileType& type ) {
-  if ( type != NtupleFileType::kOnBNB && type != NtupleFileType::kExtBNB ) {
+  if ( type != NtupleFileType::kOnBNB && type != NtupleFileType::kExtBNB && type != NtupleFileType::kOpenBNB ) {
     return true;
   }
   return false;
@@ -254,7 +286,8 @@ class FilePropertiesManager {
         // For data files, also read in the trigger count and POT exposure
         // needed for normalization purposes
         if ( type == NtupleFileType::kOnBNB
-          || type == NtupleFileType::kExtBNB )
+          || type == NtupleFileType::kExtBNB
+          || type == NtupleFileType::kOpenBNB)
         {
           int trigs;
           double pot;
@@ -285,6 +318,7 @@ class FilePropertiesManager {
 
     std::map< std::string, NtupleFileType > string_to_file_type_map_ = {
       { "onBNB", NtupleFileType::kOnBNB },
+      { "openBNB", NtupleFileType::kOpenBNB },
       { "extBNB", NtupleFileType::kExtBNB },
       { "numuMC", NtupleFileType::kNumuMC },
       { "nueMC", NtupleFileType::kIntrinsicNueMC },
@@ -301,6 +335,18 @@ class FilePropertiesManager {
       { "detVarWMX", NtupleFileType::kDetVarMCWMX },
       { "detVarWMYZ", NtupleFileType::kDetVarMCWMYZ },
       { "detVarCVExtra", NtupleFileType::kDetVarMCCVExtra },
+      { "nuedetVarCV", NtupleFileType::kNueDetVarMCCV },
+      { "nuedetVarLYatten", NtupleFileType::kNueDetVarMCLYatten },
+      { "nuedetVarLYdown", NtupleFileType::kNueDetVarMCLYdown },
+      { "nuedetVarLYrayl", NtupleFileType::kNueDetVarMCLYrayl },
+      { "nuedetVarRecomb2", NtupleFileType::kNueDetVarMCRecomb2 },
+      { "nuedetVarSCE", NtupleFileType::kNueDetVarMCSCE },
+      { "nuedetVarWMAngleXZ", NtupleFileType::kNueDetVarMCWMAngleXZ },
+      { "nuedetVarWMAngleYZ", NtupleFileType::kNueDetVarMCWMAngleYZ },
+      { "nuedetVarWMdEdx", NtupleFileType::kNueDetVarMCWMdEdx },
+      { "nuedetVarWMX", NtupleFileType::kNueDetVarMCWMX },
+      { "nuedetVarWMYZ", NtupleFileType::kNueDetVarMCWMYZ },
+      { "nuedetVarCVExtra", NtupleFileType::kNueDetVarMCCVExtra },
       { "altCVMC", NtupleFileType::kAltCVMC },
     };
 
