@@ -2,7 +2,7 @@
 
 # Sets up the local environment for working with the STV analysis scripts
 source /cvmfs/uboone.opensciencegrid.org/products/setup_uboone.sh
-setup uboonecode v08_00_00_52 -q e17:prof
+setup uboonecode v08_00_00_82 -q e17:prof
 #setup uboonecode v08_00_00_78 -q e17:prof
 export GXMLPATH=/pnfs/uboone/resilient/users/liangliu/genie_pythia:${GXMLPATH}
 

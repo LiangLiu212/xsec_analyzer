@@ -14,6 +14,7 @@ SRC_DIRS = src DIY tutorial
 
 cxxfiles=$(wildcard *.cxx src/*cxx)
 CXXOBJS=$(addprefix ${obj_dir}, $(notdir $(notdir $(patsubst %.cxx,%.o,$(cxxfiles)))))
+#cppfiles=$(filter-out DIY/BinScheme.cpp, $(wildcard $(addsuffix /*.cpp,$(SRC_DIRS))))
 cppfiles=$(wildcard $(addsuffix /*.cpp,$(SRC_DIRS)))
 CPPOBJS=$(addprefix ${obj_dir}, $(notdir $(notdir $(patsubst %.cpp,%.o,$(cppfiles)))))
 Cfiles=$(wildcard *.C src/*C)
