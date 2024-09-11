@@ -25,7 +25,7 @@ void MakeConfig::BinScheme(){
   fpm.load_file_properties("/exp/uboone/app/users/liangliu/analysis-code/xsec_analyzer_liang/Configs/file_properties_cthorpe_v00_00_04.txt");
   DIRECTORY = "muon_2d_bin"; 
   TREE  = "stv_tree";
-  RUNS = {1,2,3};
+  RUNS = {3};
   vect_block.clear();
   TString branchexpr, title, textitle, selection;
 

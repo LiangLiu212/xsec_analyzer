@@ -55,6 +55,7 @@
 
 # Run 3 detVar
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_pelee_ntuples_bnb_nu_detvar_run3_CV_reprocess_ana.root 3 detVarCV  
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_pelee_ntuples_bnb_nu_detvar_run3_CVExtra_reprocess_ana.root 3 detVarCVExtra
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_pelee_ntuples_bnb_nu_detvar_run3_LYDown_reprocess_ana.root 3 detVarLYdown  
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_pelee_ntuples_bnb_nu_detvar_run3_LYRayleigh_reprocess_ana.root 3 detVarLYrayl  
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_pelee_ntuples_bnb_nu_detvar_run3_LYAttenuation_reprocess_ana.root 3 detVarLYatten  
@@ -75,4 +76,4 @@
 #/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run3_detvar/prodgenie_bnb_nue_overlay_DetVar_wiremod_ScaleYZ_v08_00_00_38_run3b_reco2_reco2.root 3 neudetVarModYZ
 #/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run3_detvar/prodgenie_bnb_intrinsic_nue_overlay_DetVar_WireModAngleXZ_v08_00_00_38_run3b_reco2_reco2.root 3 neudetVarThetaModXZ
 #/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run3_detvar/prodgenie_bnb_intrinsic_nue_overlay_DetVar_WireModAngleYZ_v08_00_00_38_run3b_reco2_reco2.root 3 neudetVarThetaModYZ
-
+#

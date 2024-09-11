@@ -18,7 +18,7 @@ input_file=${config_dir}/files_to_process_cthorpe.txt
 output_config=file_properties_cthorpe
 output_dir=../Output
 filter_runnumbers=1,2,3
-filter_samples="numuMC,nueMC,dirtMC,extBNB,onBNB,openBNB,detVarCV,detVarLYdown,detVarLYrayl,detVarLYatten,detVarSCE,detVarRecomb2,detVarWMX,detVarWMYZ,detVarWMAngleXZ,detVarWMAngleYZ"
+filter_samples="numuMC,nueMC,dirtMC,extBNB,onBNB,openBNB,detVarCV,detVarLYdown,detVarLYrayl,detVarLYatten,detVarSCE,detVarRecomb2,detVarWMX,detVarWMYZ,detVarWMAngleXZ,detVarWMAngleYZ,detVarCVExtra"
 # Parse command-line arguments
 while getopts ":o:r:s:v:" opt; do
   case ${opt} in
