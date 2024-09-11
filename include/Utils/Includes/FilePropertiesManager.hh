@@ -67,63 +67,12 @@ enum class NtupleFileType {
 };
 
 // Utility functions for manipulating NtupleFileType values
-bool ntuple_type_is_detVar( const NtupleFileType& type ) {
-  constexpr std::array< NtupleFileType, 12 > detVar_types = {
-    NtupleFileType::kDetVarMCCV, NtupleFileType::kDetVarMCLYatten,
-    NtupleFileType::kDetVarMCLYdown, NtupleFileType::kDetVarMCLYrayl,
-    NtupleFileType::kDetVarMCRecomb2, NtupleFileType::kDetVarMCSCE,
-    NtupleFileType::kDetVarMCWMAngleXZ, NtupleFileType::kDetVarMCWMAngleYZ,
-    NtupleFileType::kDetVarMCWMdEdx, NtupleFileType::kDetVarMCWMX,
-    NtupleFileType::kDetVarMCWMYZ, NtupleFileType::kDetVarMCCVExtra
-  };
 
-  const auto begin = detVar_types.cbegin();
-  const auto end = detVar_types.cend();
-  const auto iter = std::find( begin, end, type );
-  if ( iter != end ) return true;
-  return false;
-}
-
-bool ntuple_type_is_nuedetVar( const NtupleFileType& type){
-  constexpr std::array< NtupleFileType, 12 > nuedetVar_types = {
-    NtupleFileType::kNueDetVarMCCV, NtupleFileType::kNueDetVarMCLYatten,
-    NtupleFileType::kNueDetVarMCLYdown, NtupleFileType::kNueDetVarMCLYrayl,
-    NtupleFileType::kNueDetVarMCRecomb2, NtupleFileType::kNueDetVarMCSCE,
-    NtupleFileType::kNueDetVarMCWMAngleXZ, NtupleFileType::kNueDetVarMCWMAngleYZ,
-    NtupleFileType::kNueDetVarMCWMdEdx, NtupleFileType::kNueDetVarMCWMX,
-    NtupleFileType::kNueDetVarMCWMYZ, NtupleFileType::kNueDetVarMCCVExtra
-  };
-  const auto begin = nuedetVar_types.cbegin();
-  const auto end = nuedetVar_types.cend();
-  const auto iter = std::find( begin, end, type );
-  if ( iter != end ) return true;
-  return false;
-}
-
-bool ntuple_type_is_altCV( const NtupleFileType& type ) {
-  if ( type == NtupleFileType::kAltCVMC ) return true;
-  return false;
-}
-
-bool ntuple_type_is_mc( const NtupleFileType& type ) {
-  if ( type != NtupleFileType::kOnBNB && type != NtupleFileType::kExtBNB && type != NtupleFileType::kOpenBNB ) {
-    return true;
-  }
-  return false;
-}
-
-bool ntuple_type_is_reweightable_mc( const NtupleFileType& type ) {
-
-  if ( type == NtupleFileType::kNumuMC
-    || type == NtupleFileType::kIntrinsicNueMC
-    || type == NtupleFileType::kDirtMC )
-  {
-    return true;
-  }
-
-  return false;
-}
-
+bool ntuple_type_is_detVar( const NtupleFileType& type );
+bool ntuple_type_is_nuedetVar( const NtupleFileType& type);
+bool ntuple_type_is_altCV( const NtupleFileType& type );
+bool ntuple_type_is_mc( const NtupleFileType& type );
+bool ntuple_type_is_reweightable_mc( const NtupleFileType& type );
 // Singleton class that keeps track of the various ntuple files to be analyzed
 class FilePropertiesManager {
 
@@ -232,7 +181,7 @@ class FilePropertiesManager {
       // use the default one
       std::string in_file_name( input_table_file_name );
       if ( in_file_name.empty() ) {
-        in_file_name = analysis_path_ + "/Configs/file_properties.txt";
+        in_file_name = analysis_path_ + "/Configs/file_properties_cthorpe_v00_00_04.txt";
 	std::cout << "Provided FPM_CONFIG name is empty. Using default: " << in_file_name << std::endl;
       }
 
@@ -251,7 +200,6 @@ class FilePropertiesManager {
       while ( std::getline(in_file, temp_line) ) {
         // Ignore lines that begin with the '#' character (this allows for
         // comments in the normalization table file
-        std::cout << temp_line << std::endl;
         if ( temp_line.front() == '#' || temp_line.empty() ) continue;
 
         // Read in the ntuple file name, the run number, and the file type from
@@ -305,7 +253,7 @@ class FilePropertiesManager {
   private:
 
     inline FilePropertiesManager() {
- //     this->load_file_properties();
+      this->load_file_properties();
     }
 
     // Outer keys are run numbers, inner keys are ntuple file types, values are

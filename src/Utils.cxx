@@ -17,7 +17,7 @@
  * =====================================================================================
  */
 
-
+#include "FilePropertiesManager.hh"
 #include "SliceBinning.hh"
 #include "UniverseMaker.hh"
 #include "HistUtils.hh"
@@ -1061,6 +1061,67 @@ std::vector<double> get_bin_low_edges( double xmin, double xmax, int Nbins )
 
   return bin_low_edges;
 }
+
+
+// Utility functions for manipulating NtupleFileType values
+
+bool ntuple_type_is_detVar( const NtupleFileType& type ) {
+  constexpr std::array< NtupleFileType, 12 > detVar_types = {
+    NtupleFileType::kDetVarMCCV, NtupleFileType::kDetVarMCLYatten,
+    NtupleFileType::kDetVarMCLYdown, NtupleFileType::kDetVarMCLYrayl,
+    NtupleFileType::kDetVarMCRecomb2, NtupleFileType::kDetVarMCSCE,
+    NtupleFileType::kDetVarMCWMAngleXZ, NtupleFileType::kDetVarMCWMAngleYZ,
+    NtupleFileType::kDetVarMCWMdEdx, NtupleFileType::kDetVarMCWMX,
+    NtupleFileType::kDetVarMCWMYZ, NtupleFileType::kDetVarMCCVExtra
+  };
+
+  const auto begin = detVar_types.cbegin();
+  const auto end = detVar_types.cend();
+  const auto iter = std::find( begin, end, type );
+  if ( iter != end ) return true;
+  return false;
+}
+
+bool ntuple_type_is_nuedetVar( const NtupleFileType& type){
+  constexpr std::array< NtupleFileType, 12 > nuedetVar_types = {
+    NtupleFileType::kNueDetVarMCCV, NtupleFileType::kNueDetVarMCLYatten,
+    NtupleFileType::kNueDetVarMCLYdown, NtupleFileType::kNueDetVarMCLYrayl,
+    NtupleFileType::kNueDetVarMCRecomb2, NtupleFileType::kNueDetVarMCSCE,
+    NtupleFileType::kNueDetVarMCWMAngleXZ, NtupleFileType::kNueDetVarMCWMAngleYZ,
+    NtupleFileType::kNueDetVarMCWMdEdx, NtupleFileType::kNueDetVarMCWMX,
+    NtupleFileType::kNueDetVarMCWMYZ, NtupleFileType::kNueDetVarMCCVExtra
+  };
+  const auto begin = nuedetVar_types.cbegin();
+  const auto end = nuedetVar_types.cend();
+  const auto iter = std::find( begin, end, type );
+  if ( iter != end ) return true;
+  return false;
+}
+
+bool ntuple_type_is_altCV( const NtupleFileType& type ) {
+  if ( type == NtupleFileType::kAltCVMC ) return true;
+  return false;
+}
+
+bool ntuple_type_is_mc( const NtupleFileType& type ) {
+  if ( type != NtupleFileType::kOnBNB && type != NtupleFileType::kExtBNB && type != NtupleFileType::kOpenBNB ) {
+    return true;
+  }
+  return false;
+}
+
+bool ntuple_type_is_reweightable_mc( const NtupleFileType& type ) {
+
+  if ( type == NtupleFileType::kNumuMC
+    || type == NtupleFileType::kIntrinsicNueMC
+    || type == NtupleFileType::kDirtMC )
+  {
+    return true;
+  }
+
+  return false;
+}
+
 
 
 

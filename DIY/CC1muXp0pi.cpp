@@ -133,6 +133,10 @@ void CC1muXp0pi::ComputeRecoObservables(AnalysisEvent* Event) {
         direction.Unit().Z() * range_muon_mom,
         MuonEnergy);
   }
+
+  muon_energy_ = p4Muon.E();
+  muon_costh_ = p4Muon.CosTheta();
+  muon_p_ = p4Muon.Rho();
   
 
   if(proton_index.size() > 0){
@@ -790,6 +794,11 @@ void CC1muXp0pi::DefineOutputBranches() {
   SetBranch(&lead_p_candidate_idx_,"lead_p_candidate_idx",kInteger);
   SetBranch(&muon_candidate_idx_,"muon_candidate_idx",kInteger);
   SetBranch(&muon_candidate_filter_idx_,"muon_candidate_filter_idx",kInteger);
+
+
+  SetBranch(&muon_energy_,"reco_muon_energy",kDouble);
+  SetBranch(&muon_costh_,"reco_muon_costh",kDouble);
+  SetBranch(&muon_p_,"reco_muon_p",kDouble);
 
   SetBranch(&hadron_delta_pT_,"reco_hadron_delta_pT",kDouble);
   SetBranch(&hadron_delta_phiT_,"reco_hadron_delta_phiT",kDouble);

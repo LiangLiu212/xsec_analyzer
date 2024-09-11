@@ -98,9 +98,6 @@ void analyze(const std::vector<std::string>& in_file_names,
   bool created_output_branches = false;
   long events_entry = 0;
 
-  AnalysisEvent cur_event;
-  set_event_branch_addresses( events_ch, cur_event );
-  set_event_output_branch_addresses(*out_tree, cur_event, true );
 
   while ( true ) {
     
@@ -110,24 +107,15 @@ void analyze(const std::vector<std::string>& in_file_names,
       std::cout << "CC1muXp0pi Processing event #" << events_entry << '\n';
     }
 
-//    if(events_entry > events_ch.GetEntries()) break;
-/*
-    bool create_them = false;
-    if ( !created_output_branches ) {
-      create_them = true;
-      created_output_branches = true;
-    }
-    if(create_them){
 
     // Create a new AnalysisEvent object. This will reset all analysis
     // variables for the current event.
+    AnalysisEvent cur_event;
 
     // Set branch addresses for the member variables that will be read
     // directly from the Event TTree.
+    set_event_branch_addresses( events_ch, cur_event );
 
-
-    }
-*/
 
 
     // TChain::LoadTree() returns the entry number that should be used with
@@ -145,15 +133,24 @@ void analyze(const std::vector<std::string>& in_file_names,
     events_ch.GetEntry( events_entry );
     // Set the output TTree branch addresses, creating the branches if needed
     // (during the first event loop iteration)
+
+
+    bool create_them = false;
+    if ( !created_output_branches ) {
+      create_them = true;
+      created_output_branches = true;
+    }
+    set_event_output_branch_addresses(*out_tree, cur_event, create_them );
     for (size_t i=0;i<Selections.size();i++) {
       Selections[i]->ApplySelection(&(cur_event));
     }
-    
+
+
     // We're done. Save the results and move on to the next event.
     out_tree->Fill();
     ++events_entry;
   }
-  
+
   for (size_t i=0;i<Selections.size();i++) {
     Selections[i]->Summary();
   }
@@ -162,14 +159,14 @@ void analyze(const std::vector<std::string>& in_file_names,
   for (size_t i=0;i<Selections.size();i++) {
     Selections[i]->FinalTasks();
   }
-  
+
   out_tree->Write();
   out_file->Close();
   delete out_file;
 }
 
 void analyzer(const std::string& in_file_name,
- const std::string& output_filename)
+    const std::string& output_filename)
 {
   std::vector<std::string> in_files = { in_file_name };
   analyze( in_files, output_filename );

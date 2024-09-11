@@ -116,6 +116,11 @@ private:
   MyPointer<TVector3> p3p;
   MyPointer<std::vector<TVector3>> p3_p_vec_;
 
+
+  double muon_energy_;
+  double muon_costh_;
+  double muon_p_;
+
   double mc_muon_energy_;
   double mc_muon_costh_;
   double mc_muon_p_;
