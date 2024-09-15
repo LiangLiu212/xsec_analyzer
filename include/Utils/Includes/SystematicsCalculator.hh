@@ -772,6 +772,8 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             double bnb_trigs = run_to_bnb_trigs_map.at( run );
             double ext_trigs = run_to_ext_trigs_map.at( run );
 
+            std::cout <<  "ExtBNB : " << bnb_trigs / ext_trigs << "  " << bnb_trigs << "  " << ext_trigs << std::endl;
+
             reco_hist->Scale( bnb_trigs / ext_trigs );
             reco_hist2d->Scale( bnb_trigs / ext_trigs );
           }

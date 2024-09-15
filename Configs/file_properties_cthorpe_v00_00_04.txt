@@ -5,23 +5,22 @@
 # Run1
 
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run1_nu.root 1 numuMC  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run1_nue.root 1 nueMC  
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run1_dirt.root 1 dirtMC  
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_NuWro_reco2_reco2.root 1 altCVMC
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-bnb_beam_off_peleeTuple_uboone_v08_00_00_70_run1.root 1 extBNB 65744587 0
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-bnb_beam_on_peleeTuple_uboone_v08_00_00_70_run1_C1.root 1 onBNB 37273255.00 1.67E+20
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-beamon_pelee_ntuple_opendata_run1_5e19_ana.root 1 openBNB 10127569 4.56E+19
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-beamon_pelee_ntuple_opendata_run1_5e19_ana.root 1 onBNB 10127569 4.56E+19
 
 # Run 1 Detvar
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_CV_reco2_reco2.root 1 detVarCV  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_LYDown_reco2_reco2.root 1 detVarLYdown  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_LYRayleigh_reco2_reco2.root 1 detVarLYrayl  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_LYAttenuation_reco2_reco2.root 1 detVarLYatten  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_SCE_reco2_reco2.root 1 detVarSCE  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_Recombination_reco2_reco2.root 1 detVarRecomb2  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_X_reco2_reco2.root 1 detVarWMX  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_YZ_reco2_reco2.root 1 detVarWMYZ  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_ThetaXZ_reco2_reco2.root 1 detVarWMAngleXZ  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_ThetaYZ_reco2_reco2.root 1 detVarWMAngleYZ  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_CV_reco2_reco2.root 1 detVarCV  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_LYDown_reco2_reco2.root 1 detVarLYdown  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_LYRayleigh_reco2_reco2.root 1 detVarLYrayl  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_LYAttenuation_reco2_reco2.root 1 detVarLYatten  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_SCE_reco2_reco2.root 1 detVarSCE  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_Recombination_reco2_reco2.root 1 detVarRecomb2  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_X_reco2_reco2.root 1 detVarWMX  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_YZ_reco2_reco2.root 1 detVarWMYZ  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_ThetaXZ_reco2_reco2.root 1 detVarWMAngleXZ  
+#/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_ThetaYZ_reco2_reco2.root 1 detVarWMAngleYZ  
 
 #/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1_detvar/prodgenie_bnb_intrinsic_nue_overlay_DetVar_CV_reco2_v08_00_00_38_run1_reco2_reco2.root 1 neudetVarCV
 #/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1_detvar/prodgenie_bnb_intrinsic_nue_overlay_DetVar_LYDown_v08_00_00_37_run1_reco2_reco2.root 1 neudetVarLYDown
@@ -37,20 +36,18 @@
 
 # Run2
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run2_nu.root 2 numuMC  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run2_nue.root 2 nueMC  
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run2a_dirt.root 2 dirtMC  
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run2b_dirt.root 2 dirtMC  
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run2_NuWro_reco2_reco2.root 2 altCVMC
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-bnb_beam_off_peleeTuple_uboone_v08_00_00_70_run2.root 2 extBNB 153905891 0
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-bnb_beam_on_peleeTuple_uboone_v08_00_00_70_run2.root 2 onBNB 61882791 2.61E+20
-#/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run2/OpenData_bnb_beam_on_peleeTuple_uboone_v08_00_00_70_run2.root 2 openBNB 2.04E+07 8.62E+19
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-OpenData_bnb_beam_on_peleeTuple_uboone_v08_00_00_70_run2.root 2 onBNB 20421321 8.6196E+19
 
 # Run 3
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run3_nu.root 3 numuMC  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run3_nue.root 3 nueMC  
 /exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-overlay_peleeTuple_uboone_v08_00_00_70_run3_dirt.root 3 dirtMC  
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-bnb_beam_off_peleeTuple_uboone_v08_00_00_70_run3.root 3 extBNB 2.07E+08 0
-/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-run3_bnb_beam_on_crtremerging_pandora_reco2_run3_ana.root 3 onBNB 6.14E+07 2.57E+20
-#/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run3/beamon_pelee_ntuple_opendata_run3_1e19_ana.root 3 openBNB 2387969 9.84E+18
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-bnb_beam_off_peleeTuple_uboone_v08_00_00_70_run3.root 3 extBNB 191706142 0
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-beamon_pelee_ntuple_opendata_run3_1e19_ana.root 3 onBNB 2387969 9.839E+18
+/exp/uboone/data/users/liangliu/workarea/output4/stv-v00_00_04-high_stat_prodgenie_bnb_nu_overlay_DetVar_Run3_NuWro_reco2_reco2.root  3 altCVMC
 
 
 # Run 3 detVar

@@ -8,7 +8,7 @@
 /pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1/overlay_peleeTuple_uboone_v08_00_00_70_run1_dirt.root     1       dirtMC          
 /pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1/bnb_beam_off_peleeTuple_uboone_v08_00_00_70_run1.root     1       extBNB  65744587        0
 /pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1/bnb_beam_on_peleeTuple_uboone_v08_00_00_70_run1_C1.root   1       onBNB   37273255.00     1.67E+20
-/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1/beamon_pelee_ntuple_opendata_run1_5e19_ana.root   1       openBNB 10127569        4.56E+19
+#/pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1/beamon_pelee_ntuple_opendata_run1_5e19_ana.root   1       openBNB 10127569        4.56E+19
 
 # Run 1 Detvar
 /pnfs/uboone/persistent/users/cthorpe/PELEE_2023/run1_detvar/high_stat_prodgenie_bnb_nu_overlay_DetVar_Run1_CV_reco2_reco2.root 1       detVarCV

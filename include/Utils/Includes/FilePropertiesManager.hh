@@ -200,7 +200,8 @@ class FilePropertiesManager {
       while ( std::getline(in_file, temp_line) ) {
         // Ignore lines that begin with the '#' character (this allows for
         // comments in the normalization table file
-        if ( temp_line.front() == '#' || temp_line.empty() ) continue;
+        if ( temp_line.front() == '#' || temp_line.empty() || std::all_of(temp_line.begin(), temp_line.end(), isspace) ) continue;
+
 
         // Read in the ntuple file name, the run number, and the file type from
         // the current line of the table file
