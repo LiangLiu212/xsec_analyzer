@@ -25,7 +25,7 @@ void MakeConfig::BinScheme(){
   fpm.load_file_properties("/exp/uboone/app/users/liangliu/analysis-code/xsec_analyzer_liang/Configs/file_properties_cthorpe_v00_00_04.txt");
   DIRECTORY = "muon_2d_bin"; 
   TREE  = "stv_tree";
-  RUNS = {3};
+  RUNS = {1, 2, 3};
   vect_block.clear();
   TString branchexpr, title, textitle, selection;
 
@@ -38,32 +38,82 @@ void MakeConfig::BinScheme(){
     -0.625, -0.55, -0.475, -0.4, -0.325, -0.25, -0.175, -0.1, -0.025, 0.05,
     0.125, 0.2, 0.275, 0.35, 0.425, 0.5, 0.575, 0.65, 0.725, 0.8, 0.85,
     0.875, 0.9, 0.925, 0.950, 0.975, 1. };
-
   // the branch name of the truth of proton momentum in stv root files; unit is optional with format "branch name; unit"
-  branchexpr = "CC1muXp0pi_true_muon_costh ; GeV_c";
+  branchexpr = "CC1muXp0pi_true_muon_costh";
   // the title "title; unit" is used in plot in root style
-  title = "muon cos#theta; GeV/c";
+  title = "muon cos#theta";
   // the tex title "tex title; units" is used in latex format
-  textitle = "\\cos\\theta_{\\mu}; GeV/c";
+  textitle = "\\cos\\theta_{\\mu}";
   // selection
   selection = "CC1muXp0pi_MC_Signal";
-
   Block1D *b1dt = new Block1D(branchexpr, title, textitle, cos_theta_mu_1D_edges, selection, kSignalTrueBin);
 
-
-
   // the branch name of the truth of proton momentum in stv root files; unit is optional with format "branch name; unit"
-  branchexpr = "CC1muXp0pi_reco_muon_costh ; GeV_c";
+  branchexpr = "CC1muXp0pi_reco_muon_costh";
   // the title "title; unit" is used in plot in root style
   // 
   // the tex title "tex title; units" is used in latex format
   // selection
   selection = "CC1muXp0pi_Selected";
-
   // only the name of branch and the selection is different from true.
   Block1D *b1dr = new Block1D(branchexpr, title, textitle, cos_theta_mu_1D_edges, selection, kOrdinaryRecoBin);
-
   vect_block.emplace_back(b1dt, b1dr);
+
+
+  // the branch name of the truth of proton momentum in stv root files; unit is optional with format "branch name; unit"
+  branchexpr = "CC1muXp0pi_true_muon_costh ;";
+  // the title "title; unit" is used in plot in root style
+  title = "0p muon cos#theta; ";
+  // the tex title "tex title; units" is used in latex format
+  textitle = "0p \\cos\\theta_{\\mu}; ";
+  // selection
+  selection = "CC1muXp0pi_MC_Signal && CC1muXp0pi_nProtons_in_Momentum_range == 0";
+
+  Block1D *b1dt0p = new Block1D(branchexpr, title, textitle, cos_theta_mu_1D_edges, selection, kSignalTrueBin);
+
+
+
+  // the branch name of the truth of proton momentum in stv root files; unit is optional with format "branch name; unit"
+  branchexpr = "CC1muXp0pi_reco_muon_costh ; ";
+  // the title "title; unit" is used in plot in root style
+  //
+  // the tex title "tex title; units" is used in latex format
+  // selection
+  selection = "CC1muXp0pi_Selected && CC1muXp0pi_num_proton_candidates == 0";
+
+  // only the name of branch and the selection is different from true.
+  Block1D *b1dr0p = new Block1D(branchexpr, title, textitle, cos_theta_mu_1D_edges, selection, kOrdinaryRecoBin);
+
+//  vect_block.emplace_back(b1dt0p, b1dr0p);
+
+
+  // the branch name of the truth of proton momentum in stv root files; unit is optional with format "branch name; unit"
+  branchexpr = "CC1muXp0pi_true_muon_costh ;";
+  // the title "title; unit" is used in plot in root style
+  title = "Np muon cos#theta; ";
+  // the tex title "tex title; units" is used in latex format
+  textitle = "Np \\cos\\theta_{\\mu}; ";
+  // selection
+  selection = "CC1muXp0pi_MC_Signal && CC1muXp0pi_nProtons_in_Momentum_range > 0";
+
+  Block1D *b1dtNp = new Block1D(branchexpr, title, textitle, cos_theta_mu_1D_edges, selection, kSignalTrueBin);
+
+
+
+  // the branch name of the truth of proton momentum in stv root files; unit is optional with format "branch name; unit"
+  branchexpr = "CC1muXp0pi_reco_muon_costh ; ";
+  // the title "title; unit" is used in plot in root style
+  //
+  // the tex title "tex title; units" is used in latex format
+  // selection
+  selection = "CC1muXp0pi_Selected && CC1muXp0pi_num_proton_candidates > 0";
+
+  // only the name of branch and the selection is different from true.
+  Block1D *b1drNp = new Block1D(branchexpr, title, textitle, cos_theta_mu_1D_edges, selection, kOrdinaryRecoBin);
+
+//  vect_block.emplace_back(b1dtNp, b1drNp);
+
+
 
   // muon momentum
   //
@@ -96,8 +146,6 @@ void MakeConfig::BinScheme(){
   Block1D *b1dr_pmu = new Block1D(branchexpr, title, textitle, pmu_1D_edges, selection, kOrdinaryRecoBin);
 
   vect_block.emplace_back(b1dt_pmu, b1dr_pmu);
-
-
 
 
 
@@ -658,9 +706,10 @@ void MakeConfig::BinScheme(){
 
 
 
-  // event category
+  // CATEGORY is the branchexpr 
+  // background_index is vector of background categories. 
   CATEGORY = "CC1muXp0pi_EventCategory";
-  background_index = {17, 18, 18, 20, 21, 22};
+  background_index = {17, 18, 19, 20, 21, 22};
 
 }
 
