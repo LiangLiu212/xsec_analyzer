@@ -295,7 +295,8 @@ class MakeConfig{
   private:
 
     std::vector<BlockTrueReco> vect_block;
-    TString TREE;
+    TString TREE = "stv_tree";
+    TString BIN_CONFIG;
     TString DIRECTORY;
     TString CATEGORY;
     std::vector<int> background_index;

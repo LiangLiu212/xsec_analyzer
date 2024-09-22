@@ -22,11 +22,12 @@
 void MakeConfig::BinScheme(){
 
   auto& fpm = FilePropertiesManager::Instance();
-  fpm.load_file_properties("/exp/uboone/app/users/liangliu/analysis-code/xsec_analyzer_liang/Configs/file_properties_cthorpe_v00_00_04.txt");
-  DIRECTORY = "muon_2d_bin"; 
-  TREE  = "stv_tree";
-  RUNS = {1, 2, 3};
+  fpm.load_file_properties("/exp/uboone/app/users/liangliu/analysis-code/xsec_analyzer_liang/Configs/file_properties_cthorpe_tutorial.txt");
+  DIRECTORY = "tutorial_muon_1D_bin";   // the name of a TDirectoryFile which will store all of the histograms within the output ROOT file
+  BIN_CONFIG = "tutorial_";  // prefix of output bin configure file and slice configure file
+  RUNS = {1, 2, 3};          // runs used to plot smearing matrix
   vect_block.clear();
+
   TString branchexpr, title, textitle, selection;
 
   // configure 1D block proton momentum

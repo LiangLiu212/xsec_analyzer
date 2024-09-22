@@ -81,6 +81,10 @@ void analyze(const std::vector<std::string>& in_file_names,
   std::vector<SelectionBase*> Selections;
   Selections.clear();
 
+
+  // Users need to push their Selection into selection factory
+
+
   SelectionFactory* SelFactory = new SelectionFactory();
   Selections.push_back(SelFactory->CreateSelection("CC1muXp0pi"));
 //  Selections.push_back(SelFactory->CreateSelection("CC1mu2p0pi"));

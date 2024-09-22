@@ -51,10 +51,12 @@ int main(int argc, char** argv){
     /* Detect the end of the options. */
     switch (c)
     {
-      case 'c':
+      case 'c': 
+        // Print (plot) a response matrix that facilitates binning schemes.
         mm.ResPlots();
         break;
       case 's':
+        // Save binning configuration into text files
         mm.Print();
         break;
       case 'h':

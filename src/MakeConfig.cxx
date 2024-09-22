@@ -192,7 +192,9 @@ void MakeConfig::Print(){
   cout << reco_bins.size() << '\n';
   for ( const auto& tb : reco_bins ) cout  << tb << '\n';
 
-  std::ofstream out_file( "/exp/uboone/app/users/liangliu/analysis-code/xsec_analyzer_liang/Configs/muon_bin_config.txt" );
+  TString bin_config_output = TString(std::getenv( "STV_ANALYSIS_DIR" )) + "/Configs/" + BIN_CONFIG + "bin_config.txt";
+
+  std::ofstream out_file(bin_config_output);
   out_file <<  DIRECTORY << endl;
   out_file << TREE << endl;
   out_file << true_bins.size() << '\n';
@@ -202,11 +204,15 @@ void MakeConfig::Print(){
   for ( const auto& rb : reco_bins ) out_file << rb << '\n';
   out_file.close();
 
+  TString slice_config_output = TString(std::getenv( "STV_ANALYSIS_DIR" )) + "/Configs/" + BIN_CONFIG + "slice_config.txt";
 
   cout << sb << endl;
-  std::ofstream slice_out_file( "/exp/uboone/app/users/liangliu/analysis-code/xsec_analyzer_liang/Configs/muon_slice_config.txt" );
+  std::ofstream slice_out_file( slice_config_output );
   slice_out_file << sb;
   slice_out_file.close();
+
+  std::cout << "Save universes bin configuration into => " << bin_config_output << std::endl;
+  std::cout << "Save slice configuration into         => " << slice_config_output << std::endl;
 }
 
 

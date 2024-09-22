@@ -181,7 +181,7 @@ class FilePropertiesManager {
       // use the default one
       std::string in_file_name( input_table_file_name );
       if ( in_file_name.empty() ) {
-        in_file_name = analysis_path_ + "/Configs/file_properties_cthorpe_v00_00_04.txt";
+        in_file_name = analysis_path_ + "/Configs/file_properties_cthorpe_tutorial.txt";
 	std::cout << "Provided FPM_CONFIG name is empty. Using default: " << in_file_name << std::endl;
       }
 
