@@ -1,4 +1,4 @@
-UnivFile /exp/uboone/data/users/liangliu/workarea/output2.root
+UnivFile /exp/uboone/data/users/liangliu/workarea/tutorial/tutorial_unimake_output.root
 SystFile ./Configs/systcalc.conf
 #FPFile ./Configs/file_properties.txt
 #Unfold DAgostini fm 0.025
