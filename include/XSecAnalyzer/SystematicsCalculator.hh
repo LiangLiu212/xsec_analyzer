@@ -317,7 +317,7 @@ class SystematicsCalculator {
     // POT-summed histograms for the various universes across all analysis
     // ntuples. The full name is formed from this prefix and the name of the
     // FilePropertiesManager configuration file that is currently active.
-    const std::string TOTAL_SUBFOLDER_NAME_PREFIX = "total_";
+    const std::string TOTAL_SUBFOLDER_NAME_PREFIX = "run2_";
 
     // Holds reco-space histograms for data (BNB and EXT) bin counts
     std::map< NFT, std::unique_ptr<TH1D> > data_hists_;
@@ -465,6 +465,7 @@ SystematicsCalculator::SystematicsCalculator(
     // so make them "on the fly" and store them in this object
     this->build_universes( *root_tdir );
 
+  //  exit(1);
     // Create a new TDirectoryFile as a subfolder to hold the POT-summed
     // universe histograms
     total_subdir = new TDirectoryFile( total_subfolder_name.c_str(),
@@ -473,6 +474,7 @@ SystematicsCalculator::SystematicsCalculator(
     // Write the universes to the new subfolder for faster loading
     // later
     this->save_universes( *total_subdir );
+    
   }
   else {
     // Retrieve the POT-summed universe histograms that were built
@@ -510,6 +512,8 @@ SystematicsCalculator::SystematicsCalculator(
     }
     reco_bins_.push_back( temp_reco_bin );
   }
+  
+    std::cout << "DEBUG: MCC9 OK "  << std::endl;
 
 }
 
@@ -531,6 +535,7 @@ void SystematicsCalculator::load_universes( TDirectoryFile& total_subdir ) {
     // To avoid double-counting universes, search only for the 2D event
     // count histograms
     std::string key = universe_key_list->At( k )->GetName();
+
     bool is_not_2d_hist = !has_ending( key, "_2d" );
     if ( is_not_2d_hist ) continue;
 
@@ -595,6 +600,8 @@ void SystematicsCalculator::load_universes( TDirectoryFile& total_subdir ) {
 
       // Move the detector variation Universe object into the map
       if ( is_detvar ) {
+        
+    std::cout << "DEBUG: 1 " << univ_name << std::endl;
         detvar_universes_[ temp_type ].reset( temp_univ.release() );
       }
       else { // is_altCV
@@ -675,6 +682,8 @@ void SystematicsCalculator::load_universes( TDirectoryFile& total_subdir ) {
   }
 
   total_bnb_data_pot_ = temp_pot->GetVal();
+  
+    std::cout << "DEBUG: 1 OK  "  << std::endl;
 
 }
 
@@ -708,6 +717,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
       run_to_bnb_pot_map.at( run ) += pot_and_trigs.pot_;
       run_to_bnb_trigs_map.at( run ) += pot_and_trigs.trigger_count_;
+      std::cout << run << "  " <<  pot_and_trigs.pot_ << "  " << pot_and_trigs.trigger_count_ << std::endl;
 
     } // BNB data files
 
@@ -725,6 +735,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
   } // runs
 
+//  exit(1);
   // Now that we have the accumulated POT over all BNB data runs, sum it
   // into a single number. This will be used to normalize the detVar MC
   // samples.
@@ -739,6 +750,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
   for ( const auto& run_and_type_pair : fpm.ntuple_file_map() ) {
 
     int run = run_and_type_pair.first;
+    if(run!=2) continue;
     const auto& type_map = run_and_type_pair.second;
 
     for ( const auto& type_and_files_pair : type_map ) {
@@ -750,7 +762,11 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
       bool is_reweightable_mc = ntuple_type_is_reweightable_mc( type );
       bool is_mc = ntuple_type_is_mc( type );
 
+      //  std::cout << "DEBUG : Liang Liu 1  file number " << file_set.size()  << std::endl;
+      int detvar_index = 0;
+      int file_set_size = file_set.size();
       for ( const std::string& file_name : file_set ) {
+        detvar_index++;
 
         std::cout << "PROCESSING universes for " << file_name << '\n';
 
@@ -759,9 +775,12 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
         // value of this flag will be reconsidered below.
         bool is_fake_data = false;
 
+        //  std::cout << "DEBUG : Liang Liu 1" << std::endl;
+
         // Get the simulated or measured POT belonging to the current file.
         // This will be used to normalize the relevant histograms
         double file_pot = 0.;
+        double detvar_file_pot = 0;
         if ( is_mc ) {
           // MC files have the simulated POT stored alongside the ntuple
           // TODO: use the TDirectoryFile to handle this rather than
@@ -772,22 +791,26 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           if ( !temp_pot ) throw std::runtime_error(
             "Missing POT in MC file!" );
           file_pot = temp_pot->GetVal();
+          if(is_detVar) detvar_file_pot += file_pot;
         }
         else {
           // We can ask the FilePropertiesManager for the data POT values
           file_pot = fpm.data_norm_map().at( file_name ).pot_;
         }
+        //  std::cout << "DEBUG : Liang Liu 1" << std::endl;
 
         // Get the TDirectoryFile name used to store histograms for the
         // current ntuple file
         std::string subdir_name = ntuple_subfolder_from_file_name(
           file_name );
 
+          //  std::cout << "DEBUG : Liang Liu 1  >>>" << subdir_name << "<<<" <<  std::endl;
         TDirectoryFile* subdir = nullptr;
         root_tdir.GetObject( subdir_name.c_str(), subdir );
         if ( !subdir ) throw std::runtime_error(
           "Missing TDirectoryFile " + subdir_name );
 
+        //  std::cout << "DEBUG : Liang Liu 1" << std::endl;
         // For data, just add the reco-space event counts to the total,
         // scaling to the beam-on triggers in the case of EXT data
         if ( !is_mc ) {
@@ -808,6 +831,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             reco_hist2d->Scale( bnb_trigs / ext_trigs );
           }
 
+        //  std::cout << "DEBUG : Liang Liu 1" << std::endl;
           // If we don't have a histogram in the map for this data type
           // yet, just clone the existing histogram.
           if ( !data_hists_.count(type) ) {
@@ -825,6 +849,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             data_hists_.at( type )->Add( reco_hist.get() );
           }
 
+        //  std::cout << "DEBUG : Liang Liu 1" << std::endl;
           if ( !data_hists2d_.count(type) ) {
             TH2D* temp_clone = dynamic_cast<TH2D*>(
               reco_hist2d->Clone("temp_clone")
@@ -840,6 +865,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             data_hists2d_.at( type )->Add( reco_hist2d.get() );
           }
 
+        //  std::cout << "DEBUG : Liang Liu 1" << std::endl;
           // For EXT data files (always assumed to be real data), no further
           // processing is needed, so just move to the next file
           if ( type == NFT::kExtBNB ) continue;
@@ -877,6 +903,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
         } // data ntuple files
 
+        //  std::cout << "DEBUG : Liang Liu 1" << std::endl;
         // If we've made it here, then we're working with an MC ntuple
         // file. For these, all four histograms for the "unweighted"
         // universe are always evaluated. Use this to determine the number
@@ -945,16 +972,18 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           fake_data_universe_->hist_reco2d_->Add( h_reco2d.get() );
           fake_data_universe_->hist_true2d_->Add( h_true2d.get() );
 
+        //  std::cout << "DEBUG : Liang Liu 1 is_detVar || is_altCV" << std::endl;
         } // fake data sample
 
         // Now we'll take care of the detVar and altCV samples.
         else if ( is_detVar || is_altCV ) {
 
           std::string dv_univ_name = fpm.ntuple_type_to_string( type );
+          std::string hist_name_dv_univ_name = dv_univ_name;
 
           // Make a temporary new Universe object to store
           // (POT-scaled) detVar/altCV histograms (if needed)
-          auto temp_univ = std::make_unique< Universe >( dv_univ_name,
+          auto temp_univ = std::make_unique< Universe >( hist_name_dv_univ_name,
             0, num_true_bins, num_reco_bins );
 
           // Temporary pointer that will allow us to treat the single-file
@@ -971,7 +1000,8 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           // exception when a duplicate is encountered.
           // TODO: revisit this when you have detVar samples for all runs
           if ( is_detVar && detvar_universes_.count(type) ) {
-            throw std::runtime_error( "Duplicate detVar ntuple file!" );
+            // throw std::runtime_error( "Duplicate detVar ntuple file!" );
+            temp_univ_ptr = detvar_universes_.at( type ).get();
           }
           // For the alternate CV sample, if a previous universe already
           // exists in the map, then get access to it via a pointer
@@ -1004,30 +1034,34 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           auto hist_true2d = get_object_unique_ptr< TH2D >(
             "unweighted_0_true2d", *subdir );
 
-          double temp_scale_factor = 1.;
-          if ( is_altCV ) {
-            // AltCV ntuple files are available for all runs, so scale
-            // each individually to the BNB data POT for the current run
-            double temp_run_pot = run_to_bnb_pot_map.at( run );
-            temp_scale_factor = temp_run_pot / file_pot;
-          }
-          else {
-            // Scale all detVar universe histograms from the simulated POT to
-            // the *total* BNB data POT for all runs analyzed. Since we only
-            // have detVar samples for Run 3b, we assume that they can be
-            // applied globally in this step.
-            // TODO: revisit this as appropriate
-            temp_scale_factor = total_bnb_data_pot_ / file_pot;
-          }
+//          double temp_scale_factor = 1.;
+//          if ( is_altCV ) {
+//            // AltCV ntuple files are available for all runs, so scale
+//            // each individually to the BNB data POT for the current run
+//            double temp_run_pot = run_to_bnb_pot_map.at( run );
+//            temp_scale_factor = temp_run_pot / file_pot;
+//          }
+//          else {
+//            // Scale all detVar universe histograms from the simulated POT to
+//            // the *total* BNB data POT for all runs analyzed. Since we only
+//            // have detVar samples for Run 3b, we assume that they can be
+//            // applied globally in this step.
+//            // TODO: revisit this as appropriate
+//            temp_scale_factor = total_bnb_data_pot_ / file_pot;
+//          }
+          double temp_run_pot = run_to_bnb_pot_map.at( run );
+          double temp_scale_factor = temp_run_pot / file_pot;
 
           // Apply the scaling factor defined above to all histograms that
           // will be owned by the new Universe
-          hist_reco->Scale( temp_scale_factor );
-          hist_true->Scale( temp_scale_factor );
-          hist_2d->Scale( temp_scale_factor );
-          hist_categ->Scale( temp_scale_factor );
-          hist_reco2d->Scale( temp_scale_factor );
-          hist_true2d->Scale( temp_scale_factor );
+          if(is_altCV){
+            hist_reco->Scale( temp_scale_factor );
+            hist_true->Scale( temp_scale_factor );
+            hist_2d->Scale( temp_scale_factor );
+            hist_categ->Scale( temp_scale_factor );
+            hist_reco2d->Scale( temp_scale_factor );
+            hist_true2d->Scale( temp_scale_factor );
+          }
 
           // Add the scaled contents of these histograms to the
           // corresponding histograms in the new Universe object
@@ -1038,15 +1072,26 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           temp_univ_ptr->hist_reco2d_->Add( hist_reco2d.get() );
           temp_univ_ptr->hist_true2d_->Add( hist_true2d.get() );
 
+          if(is_detVar && detvar_index == file_set_size){
+            std::cout << "DEBUG : pot : " << temp_run_pot << " : " << detvar_file_pot << "  =  "  << temp_run_pot / detvar_file_pot << std::endl;
+            temp_scale_factor = temp_run_pot / detvar_file_pot;
+            temp_univ_ptr->hist_reco_->Scale(temp_scale_factor);
+            temp_univ_ptr->hist_true_->Scale(temp_scale_factor);
+            temp_univ_ptr->hist_2d_->Scale(temp_scale_factor);
+            temp_univ_ptr->hist_categ_->Scale(temp_scale_factor);
+            temp_univ_ptr->hist_reco2d_->Scale(temp_scale_factor);
+            temp_univ_ptr->hist_true2d_->Scale(temp_scale_factor);
+          }
+
           // Adjust the owned histograms to avoid auto-deletion problems
           set_stats_and_dir( *temp_univ_ptr );
 
           // If one wasn't present before, then move the finished Universe
           // object into the map
-          if ( is_detVar ) {
+          if ( is_detVar && detvar_universes_.count(type) == 0) {
             detvar_universes_[ type ].reset( temp_univ.release() );
           }
-          else if ( !prior_altCV ) { // is_altCV
+          else if ( is_altCV && !prior_altCV  ) { // is_altCV
             alt_cv_universes_[ type ].reset( temp_univ.release() );
           }
 
@@ -1060,10 +1105,13 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           // its TDirectoryFile.
           // NOTE: I rely here on the reweighting universe definitions
           // being identical across all ntuples considered by the script.
+        //  std::cout << "DEBUG : Liang Liu is_reweightable_mc 1" << std::endl;
           if ( rw_universes_.empty() ) {
 
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 2" << std::endl;
             TList* universe_key_list = subdir->GetListOfKeys();
             int num_keys = universe_key_list->GetEntries();
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 3" << std::endl;
 
             for ( int k = 0; k < num_keys; ++k ) {
               // To avoid double-counting universes, only create new
@@ -1071,10 +1119,12 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
               std::string key = universe_key_list->At( k )->GetName();
               bool is_not_2d_hist = !has_ending( key, "_2d" );
               if ( is_not_2d_hist ) continue;
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 3.1" << std::endl;
 
               // Get rid of the trailing "_2d" by deleting the last three
               // characters from the current key
               key.erase( key.length() - 3u );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 3.2" << std::endl;
 
               // The last underscore separates the universe name from its
               // index. Split the key into these two parts.
@@ -1084,6 +1134,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
               std::string univ_index_str = key.substr( temp_idx + 1u );
 
               int univ_index = std::stoi( univ_index_str );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 3.3" << std::endl;
 
               // We have what we need to create the new Universe object. Do
               // it! Note that its owned histograms are currently empty.
@@ -1091,6 +1142,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
                 univ_index, num_true_bins, num_reco_bins );
 
               set_stats_and_dir( *temp_univ );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 3.4" << std::endl;
 
               // If we do not already have a map entry for this kind of
               // universe, then create one
@@ -1099,6 +1151,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
                   = std::vector< std::unique_ptr<Universe> >();
               }
 
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 3.5" << std::endl;
               // Move this universe into the map. Note that the automatic
               // sorting of keys in a ROOT TDirectoryFile ensures that the
               // universe ordering remains correct.
@@ -1114,6 +1167,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           // each universe to the BNB data POT for the current run
           double run_bnb_pot = run_to_bnb_pot_map.at( run );
           double rw_scale_factor = run_bnb_pot / file_pot;
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 3.6" << std::endl;
 
           // Iterate over the reweighting universes, retrieve the
           // histograms for each, and add their POT-scaled contributions
@@ -1122,10 +1176,12 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             std::string univ_name = rw_pair.first;
             auto& univ_vec = rw_pair.second;
 
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 4" << std::endl;
             for ( size_t u_idx = 0u; u_idx < univ_vec.size(); ++u_idx ) {
               // Get a reference to the current universe object
               auto& universe = *univ_vec.at( u_idx );
 
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 5" << std::endl;
               // Double-check that the universe ordering is right. The
               // index in the map of universes should match the index
               // stored in the Universe object itself. If this check fails,
@@ -1133,6 +1189,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
               // input TDirectoryFile.
               if ( u_idx != universe.index_ ) throw std::runtime_error(
                 "Universe sorting went wrong!" );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 6" << std::endl;
 
               // Retrieve the histograms for the current universe from the
               // current TDirectoryFile
@@ -1141,30 +1198,42 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
               auto h_reco = get_object_unique_ptr< TH1D >(
                 (hist_name_prefix + "_reco"), *subdir );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 6.1" << hist_name_prefix <<  std::endl;
 
               auto h_true = get_object_unique_ptr< TH1D >(
                 (hist_name_prefix + "_true"), *subdir );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 6.2" << std::endl;
 
               auto h_2d = get_object_unique_ptr< TH2D >(
                 (hist_name_prefix + "_2d"), *subdir );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 6.3" << std::endl;
 
               auto h_categ = get_object_unique_ptr< TH2D >(
                 (hist_name_prefix + "_categ"), *subdir );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 6.4" << std::endl;
 
               auto h_reco2d = get_object_unique_ptr< TH2D >(
                 (hist_name_prefix + "_reco2d"), *subdir );
 
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 6.5" << std::endl;
               auto h_true2d = get_object_unique_ptr< TH2D >(
                 (hist_name_prefix + "_true2d"), *subdir );
 
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 1 " << rw_scale_factor << "  " << h_reco->Integral() << std::endl;
               // Scale these histograms to the appropriate BNB data POT for
               // the current run
               h_reco->Scale( rw_scale_factor );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 7.1  " << rw_scale_factor << std::endl;
               h_true->Scale( rw_scale_factor );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 7.2" << std::endl;
               h_2d->Scale( rw_scale_factor );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc =7.3" << std::endl;
               h_categ->Scale( rw_scale_factor );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 7.4" << std::endl;
               h_reco2d->Scale( rw_scale_factor );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 7.5" << std::endl;
               h_true2d->Scale( rw_scale_factor );
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 7.6" << std::endl;
 
               // Add their contributions to the owned histograms for the
               // current Universe object
@@ -1175,6 +1244,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
               universe.hist_reco2d_->Add( h_reco2d.get() );
               universe.hist_true2d_->Add( h_true2d.get() );
 
+        //  std::cout << "DEBUG : Liang Liu s_reweightable_mc 1" << std::endl;
             } // universes indices
 
           } // universe types
@@ -1436,6 +1506,7 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
   while ( config_file >> name >> type ) {
 
     CovMatrix temp_cov_mat = this->make_covariance_matrix( name );
+    std::cout << "DEBUG : get_covariances " << name << std::endl;
 
     // If the current covariance matrix is defined as a sum of others, then
     // just add the existing ones together to compute it
@@ -1445,6 +1516,7 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
       std::string cm_name;
       for ( int cm = 0; cm < count; ++cm ) {
         config_file >> cm_name;
+        if(detvar_universes_.size() == 10 && cm_name == "detVarLYdown") continue;
         if ( !matrix_map.count(cm_name) ) {
           throw std::runtime_error( "Undefined covariance matrix " + cm_name );
         }
@@ -1520,11 +1592,13 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
 
     else if ( type == "DV" ) {
       // Get the detector variation type represented by the current universe
+      std::cout << "DEBUG:  detvar_universes_.size() :  " << detvar_universes_.size() << std::endl;
       std::string ntuple_type_str;
       config_file >> ntuple_type_str;
 
       const auto& fpm = FilePropertiesManager::Instance();
       auto ntuple_type = fpm.string_to_ntuple_type( ntuple_type_str );
+      if( ntuple_type == NFT::kDetVarMCLYdown && detvar_universes_.size() == 10) continue;
 
       // Check that it's valid. If not, then complain.
       bool is_not_detVar = !ntuple_type_is_detVar( ntuple_type );
@@ -1541,10 +1615,18 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
       // The Recomb2 and SCE variations use an alternate "extra CV" universe
       // since they were generated with smaller MC statistics.
       // TODO: revisit this if your detVar samples change in the future
+      // using a fake alt detvar cv for run 1 2 4 5
+      // if the number of detvar universes is 10, than it should be run 1
+
+      std::cout << "DEBUG:  detvar_universes_.size() :  " << detvar_universes_.size() << std::endl;
+
       if ( ntuple_type == NFT::kDetVarMCSCE
         || ntuple_type == NFT::kDetVarMCRecomb2 )
       {
         detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCVExtra ).get();
+      }
+      else if(ntuple_type == NFT::kDetVarMCLYdown){
+        detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCVLYdown ).get();
       }
 
       make_cov_mat( *this, temp_cov_mat, *detVar_cv_u,

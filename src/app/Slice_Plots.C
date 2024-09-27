@@ -17,7 +17,7 @@
 
 using NFT = NtupleFileType;
 
-//#define USE_FAKE_DATA ""
+#define USE_FAKE_DATA ""
 
 namespace {
 
@@ -101,8 +101,10 @@ void tutorial_slice_plots(std::string FPM_Config, std::string SYST_Config, std::
   // Get access to the relevant histograms owned by the SystematicsCalculator
   // object. These contain the reco bin counts that we need to populate the
   // slices below.
+  std::cout << "DEBUG : MCC9 1" << std::endl;
   TH1D* reco_bnb_hist = syst.data_hists_.at( NFT::kOnBNB ).get();
   TH1D* reco_ext_hist = syst.data_hists_.at( NFT::kExtBNB ).get();
+  std::cout << "DEBUG : MCC9 1" << std::endl;
 
   #ifdef USE_FAKE_DATA
     // Add the EXT to the "data" when working with fake data
@@ -110,6 +112,7 @@ void tutorial_slice_plots(std::string FPM_Config, std::string SYST_Config, std::
   #endif
 
   TH2D* category_hist = syst.cv_universe().hist_categ_.get();
+  std::cout << "DEBUG : MCC9 1" << std::endl;
 
   // Total MC+EXT prediction in reco bin space. Start by getting EXT.
   TH1D* reco_mc_plus_ext_hist = dynamic_cast< TH1D* >(
@@ -118,10 +121,12 @@ void tutorial_slice_plots(std::string FPM_Config, std::string SYST_Config, std::
 
   // Add in the CV MC prediction
   reco_mc_plus_ext_hist->Add( syst.cv_universe().hist_reco_.get() );
+  std::cout << "DEBUG : MCC9 1" << std::endl;
 
   // Keys are covariance matrix types, values are CovMatrix objects that
   // represent the corresponding matrices
   auto* matrix_map_ptr = syst.get_covariances().release();
+  std::cout << "DEBUG : MCC9 1" << std::endl;
   auto& matrix_map = *matrix_map_ptr;
 
   auto* sb_ptr = new SliceBinning( SLICE_Config );
