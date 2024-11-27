@@ -1,8 +1,11 @@
 // ROOT needs these dictionary definitions to be able to manipulate TTree
 // branches with specific types, such as a std::vector of TVector3 objects
 #include "TVector3.h"
+#include "TLorentzVector.h"
 
 #pragma link C++ class std::vector< TVector3 >+;
+#pragma link C++ class std::vector< TLorentzVector >+;
+#pragma link C++ class std::vector< std::vector< float > >+;
 
 #include <vector>
 #include <string>

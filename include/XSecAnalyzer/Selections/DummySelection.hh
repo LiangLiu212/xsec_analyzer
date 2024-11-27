@@ -18,5 +18,6 @@ public:
   virtual void define_constants() override final;
   virtual void define_category_map() override final;
   virtual void reset() override final;
+  virtual void define_additional_input_branches(TTree& etree) override final;
 
 };

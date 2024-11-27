@@ -86,7 +86,7 @@ void CC1muNp0pi::compute_true_observables( AnalysisEvent* Event ) {
     double ProtonEnergy = real_sqrt( mc_p3p->Mag()*mc_p3p->Mag()
       + PROTON_MASS*PROTON_MASS );
 
-    STVTools stv_tools;
+    STV_Tools stv_tools;
     stv_tools.CalculateSTVs( *mc_p3mu, *mc_p3p, MuonEnergy, ProtonEnergy,
       calc_type );
 
@@ -222,7 +222,7 @@ void CC1muNp0pi::compute_reco_observables( AnalysisEvent* Event ) {
     double ProtonEnergy	= real_sqrt( p3p->Mag()*p3p->Mag()
       + PROTON_MASS*PROTON_MASS );
 
-    STVTools stv_tools;
+    STV_Tools stv_tools;
     stv_tools.CalculateSTVs( *p3mu, *p3p, MuonEnergy, ProtonEnergy, calc_type );
 
     delta_pT_ = stv_tools.ReturnPt();
@@ -765,4 +765,10 @@ void CC1muNp0pi::reset() {
 void CC1muNp0pi::define_category_map() {
   // Use the shared category map for 1p/2p/Np/Xp
   categ_map_ = CC1muXp_MAP;
+}
+
+/////////////////////////////////////////////////////////////////
+//
+////////////////////////////////////////////////////////////////
+void CC1muNp0pi::define_additional_input_branches(TTree& etree){
 }

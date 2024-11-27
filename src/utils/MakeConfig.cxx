@@ -4,7 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <vector>
-
+#include <cmath>
 // XSecAnalyzer includes
 #include "XSecAnalyzer/ConfigMakerUtils.hh"
 #include "XSecAnalyzer/HistUtils.hh"
@@ -39,6 +39,8 @@
 // Initialize the static dummy counter owned by the MakeConfig class. This
 // counter is used to ensure that each automatically-generated histogram has a
 // unique name to use with TTree::Draw()
+
+
 int MakeConfig::hist_count = 0;
 
 MakeConfig::MakeConfig( const std::string& bin_scheme_name ) {
@@ -90,6 +92,7 @@ void MakeConfig::ResPlots() {
       std::stringstream temp_ss;
       temp_ss << "temp\n";
       temp_ss << "stv_tree\n";
+      temp_ss << SELECTION << '\n';
       temp_ss << true_bins.size() << '\n';
       for ( const auto& tb : true_bins ) temp_ss << tb << '\n';
 
@@ -189,8 +192,63 @@ void MakeConfig::Print(){
 
   // Add a single true bin to collect background events by inverting the
   // signal definition for the input selection
-  std::string bkgd_bdef = "!" + SELECTION + "_MC_Signal";
-  true_bins.emplace_back( bkgd_bdef, kBackgroundTrueBin, DUMMY_BLOCK_INDEX );
+  //std::string bkgd_bdef = "!" + SELECTION + "_MC_Signal";
+  //true_bins.emplace_back( bkgd_bdef, kBackgroundTrueBin, DUMMY_BLOCK_INDEX );
+
+  // Using background category
+  for(const auto& bkg_idx : *background_index){
+    std::string bdef = CATEGORY + Form( " == %d", bkg_idx );
+    true_bins.emplace_back( bdef, kBackgroundTrueBin, DUMMY_BLOCK_INDEX );
+  }
+
+  // Using sideband 
+
+//  sb.slice_vars_.emplace_back( "sideband",
+//      "",
+//      "sideband",
+//      "" );
+//  int bin_sideband_var_idx = find_slice_var_index( "sideband", sb.slice_vars_ );
+
+  // Create a slice showing all results together as a function of bin number
+
+  // Counting the total bins of sideband from many blocks
+  std::vector<double> sideband_edges;
+  for(int i = 0; i < vect_sideband->size(); i++){
+    std::vector<double> source = vect_sideband->at(i).block_reco_->GetVector();
+    std::copy(source.begin(), source.end(), std::back_inserter(sideband_edges));
+  }
+
+  // 	auto& bin_sideband_slice = add_slice( sb, sideband_edges, bin_number_var_idx+1 );
+  //	int sideband_bin_index = 0;
+  for(int i = 0; i < vect_sideband->size(); i++){
+    if(vect_sideband->at(i).block_reco_->Is1D()){
+      auto& bin_sideband_slice = add_slice( sb, vect_sideband->at(i).block_reco_->GetVector(), bin_number_var_idx++ );
+      int sideband_bin_index = 0;
+      for(int j = 0; j < vect_sideband->at(i).block_reco_->GetNBinsX(); j++){
+        bin_sideband_slice.bin_map_[ ++sideband_bin_index ].insert( reco_bins.size() );
+        reco_bins.emplace_back( vect_sideband->at(i).block_reco_->GetBinDef(j),
+            RecoBinType(vect_sideband->at(i).block_reco_->GetBinType()), -1 );
+      }
+    }
+    else{
+
+      int xvar_idx = bin_number_var_idx++;
+      int yvar_idx = bin_number_var_idx++;
+      for( int j = 0; j < vect_sideband->at(i).block_reco_->GetNBinsX(); j++ ){
+        double xlow = vect_sideband->at(i).block_reco_->GetBinXLow(j);
+        double xhigh = vect_sideband->at(i).block_reco_->GetBinXHigh(j);
+        auto& slice = add_slice( sb, vect_sideband->at(i).block_reco_->GetVector(j),
+            xvar_idx, yvar_idx, xlow, xhigh );
+        for( int k = 0; k < vect_sideband->at(i).block_reco_->GetNBinsY(j); k++ ){
+          slice.bin_map_[ k + 1 ].insert( reco_bins.size() );
+          reco_bins.emplace_back(vect_sideband->at(i).block_reco_->GetBinDef(j, k),
+              RecoBinType(vect_sideband->at(i).block_reco_->GetBinType()), -1 );
+        }
+      }
+    }
+  }
+
+
 
   std::cout << DIRECTORY << '\n';
   std::cout << TREE << '\n';
@@ -204,6 +262,7 @@ void MakeConfig::Print(){
     + std::string( "/configs/" ) + BIN_CONFIG + "bin_config.txt";
 
   std::ofstream out_file( bin_config_output );
+  out_file << std::fixed << std::setprecision(3);
   out_file <<  DIRECTORY << '\n';
   out_file << TREE << '\n';
   out_file << SELECTION << '\n';
@@ -225,7 +284,7 @@ void MakeConfig::Print(){
   std::cout << "Save universes bin configuration into => "
     << bin_config_output << '\n';
   std::cout << "Save slice configuration into         => "
-   << slice_config_output << '\n';
+    << slice_config_output << '\n';
 }
 
 void MakeConfig::make_res_plots( const std::string& branchexpr,
@@ -387,6 +446,8 @@ void MakeConfig::make_res_plots( const std::string& branchexpr,
   TCanvas* c_expected = new TCanvas;
   expected_reco_hist->Draw( "hist e" );
 
+  c_expected->SaveAs(TString(smear_hist_name) + TString(branchexpr) + "_hist.png");
+
   // Normalize the smearing matrix elements so that a sum over all reco bins
   // (including the under/overflow bins) yields a value of one. This means that
   // every selected signal event must end up somewhere in reco space.
@@ -456,6 +517,7 @@ void MakeConfig::make_res_plots( const std::string& branchexpr,
     smear_hist->Draw( "colz" );
   }
 
+  c_smear->SaveAs(TString(smear_hist_name) + TString(branchexpr) + ".png");
   // For each true bin, print the fraction of events that are reconstructed
   // in the correct corresponding reco bin.
   printf("Diagonal of 1D %dx%d smear matrix of ", num_reco_bins, num_reco_bins);
@@ -487,8 +549,8 @@ void MakeConfig::make_res_plots( const std::string& branchexpr,
 }
 
 void MakeConfig::make_res_plots( std::istream& in_stream,
-  const std::set<int>& runs, const std::string& universe_branch_name,
-  size_t universe_index, bool show_smear_numbers )
+    const std::set<int>& runs, const std::string& universe_branch_name,
+    size_t universe_index, bool show_smear_numbers )
 {
   const std::string variable_title = "bin";
 
@@ -583,6 +645,7 @@ void MakeConfig::make_res_plots( std::istream& in_stream,
 
   TCanvas* c_expected = new TCanvas;
   expected_reco_hist->Draw( "hist e" );
+  c_expected->SaveAs(TString(c_expected->GetName()) + "_hist.png");
 
   // Normalize the smearing matrix elements so that a sum over all reco bins
   // (including the under/overflow bins) yields a value of one. This means that
@@ -678,6 +741,7 @@ void MakeConfig::make_res_plots( std::istream& in_stream,
   bkgd_line->SetLineStyle( 2 );
   bkgd_line->Draw( "same" );
 
+  c_smear->SaveAs(TString(c_smear->GetName()) + "_smear.png");
   // For each true bin, print the fraction of events that are reconstructed
   // in the correct corresponding reco bin.
   //for ( int bb = 1; bb <= num_reco_bins; ++bb ) {
@@ -714,7 +778,7 @@ void Block1D::Init(){
     if ( fselection.size() != 0 ) {
       bin_def = fselection + " && ";
     }
-    bin_def += xName + Form(" >= %f && ", low) + xName + Form(" < %f", high);
+    bin_def += xName + Form(" >= %.3f && ", low) + xName + Form(" < %.3f", high);
     binDef.push_back( bin_def );
   }
 }
@@ -839,6 +903,7 @@ void Block2D::Init(){
     auto next = iter;
     ++next;
     if(next == fblock.cend()) continue;
+    double value;
     double slice_low = iter->first;
     double slice_high = next->first;
 
@@ -851,9 +916,9 @@ void Block2D::Init(){
       if ( fselection.size() != 0 ) {
         bin_def = fselection + " && ";
       }
-      bin_def += xName + Form(" >= %f && ", slice_low)
-        + xName + Form(" < %f && ", slice_high) + yName
-        + Form(" >= %f && ", bin_low) + yName + Form(" < %f ", bin_high);
+      bin_def += xName + Form(" >= %.3f && ", slice_low)
+        + xName + Form(" < %.3f && ", slice_high) + yName
+        + Form(" >= %.3f && ", bin_low) + yName + Form(" < %.3f", bin_high);
       binDef.push_back( bin_def );
     }
   }
@@ -934,8 +999,8 @@ void Block2D::SetTitle( const std::string& title ) {
     str_container.clear();
   }
   else throw std::runtime_error( "Wrong title -> " + fTitle
-    + ". The format of the title of 2D block must be <branch title>;"
-    + " <unit>; <y branch title>; <y unit>." );
+      + ". The format of the title of 2D block must be <branch title>;"
+      + " <unit>; <y branch title>; <y unit>." );
 }
 
 
@@ -973,8 +1038,8 @@ void Block2D::SetTexTitle( const std::string& textitle ) {
     str_container.clear();
   }
   else throw std::runtime_error( "Wrong title -> " + fTexTitle
-    + ". The format of the title of 2D block must be <branch title>;"
-    + " <unit>; <y branch title>; <y unit>." );
+      + ". The format of the title of 2D block must be <branch title>;"
+      + " <unit>; <y branch title>; <y unit>." );
 }
 
 void MakeConfig::BinScheme() {
@@ -997,6 +1062,9 @@ void MakeConfig::BinScheme() {
 
   // Runs used to plot smearing matrix
   RUNS = bin_scheme_->runs_to_use_;
+  CATEGORY = bin_scheme_->CATEGORY;
+  background_index = &bin_scheme_->background_index;
 
   vect_block = &bin_scheme_->vect_block;
+  vect_sideband = &bin_scheme_->vect_sideband;
 }

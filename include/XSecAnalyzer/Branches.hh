@@ -21,6 +21,11 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   //SetBranchAddress(etree,"nslice",&ev.nslice_);
   SetBranchAddress(etree, "nslice", &ev.nslice_ );
 
+
+   SetBranchAddress(etree, "run", &ev.run_ );
+   SetBranchAddress(etree, "sub", &ev.subrun_ );
+   SetBranchAddress(etree, "evt", &ev.evt_  );
+
   // Topological score
   SetBranchAddress(etree, "topological_score", &ev.topological_score_ );
   SetBranchAddress(etree, "CosmicIP", &ev.cosmic_impact_parameter_ );
@@ -86,6 +91,31 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
     ev.shower_start_distance_.reset( nullptr );
   }
 
+  // Generator truth
+  bool has_generator_truth = (etree.GetBranch("mc_generator_pdg") != nullptr);
+  if(has_generator_truth){
+    set_object_input_branch_address(etree, "mc_generator_pdg", ev.mc_generator_pdg_);
+    set_object_input_branch_address(etree, "mc_generator_mother", ev.mc_generator_mother_);
+    set_object_input_branch_address(etree, "mc_generator_rescatter", ev.mc_generator_rescatter_);
+    set_object_input_branch_address(etree, "mc_generator_trackid", ev.mc_generator_trackid_);
+    set_object_input_branch_address(etree, "mc_generator_statuscode", ev.mc_generator_statuscode_);
+    set_object_input_branch_address(etree, "mc_generator_E", ev.mc_generator_E_);
+    set_object_input_branch_address(etree, "mc_generator_px", ev.mc_generator_px_);
+    set_object_input_branch_address(etree, "mc_generator_py", ev.mc_generator_py_);
+    set_object_input_branch_address(etree, "mc_generator_pz", ev.mc_generator_pz_);
+  }
+  else{
+    ev.mc_generator_pdg_.reset(nullptr);
+    ev.mc_generator_rescatter_.reset(nullptr);
+    ev.mc_generator_mother_.reset(nullptr);
+    ev.mc_generator_trackid_.reset(nullptr);
+    ev.mc_generator_statuscode_.reset(nullptr);
+    ev.mc_generator_E_.reset(nullptr);
+    ev.mc_generator_px_.reset(nullptr);
+    ev.mc_generator_py_.reset(nullptr);
+    ev.mc_generator_pz_.reset(nullptr);
+  }
+
   // Track properties
   set_object_input_branch_address( etree, "trk_pfp_id_v", ev.track_pfp_id_ );
   set_object_input_branch_address( etree, "trk_len_v", ev.track_length_ );
@@ -97,6 +127,7 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   // convenience)
   set_object_input_branch_address( etree, "trk_distance_v",
     ev.track_start_distance_ );
+
 
   set_object_input_branch_address( etree, "trk_sce_end_x_v", ev.track_endx_ );
   set_object_input_branch_address( etree, "trk_sce_end_y_v", ev.track_endy_ );
@@ -128,6 +159,20 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   else {
     ev.track_chi2_proton_.reset( nullptr );
   }
+  //////////////// Same for muon 
+    bool has_chipr_muon = ( etree.GetBranch("trk_pid_chimu_v") != nullptr );
+  if ( has_chipr_muon ) {
+    set_object_input_branch_address( etree, "trk_pid_chimu_v",
+      ev.track_chi2_muon_ );
+  }
+  else {
+    ev.track_chi2_muon_.reset( nullptr );
+  }
+  
+  
+
+ set_object_input_branch_address( etree, "trk_bragg_mu_fwd_preferred_v",
+      ev.trk_bragg_mu_fwd_preferred_v_ );
 
   // Log-likelihood-based particle ID information
   set_object_input_branch_address( etree, "trk_llr_pid_v", ev.track_llr_pid_ );
@@ -160,6 +205,8 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   SetBranchAddress(etree, "true_nu_vtx_sce_y", &ev.mc_nu_sce_vy_ );
   SetBranchAddress(etree, "true_nu_vtx_sce_z", &ev.mc_nu_sce_vz_ );
 
+
+
   //=============================================
 
   // MC truth information for the final-state primary particles
@@ -168,6 +215,12 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   set_object_input_branch_address( etree, "mc_px", ev.mc_nu_daughter_px_ );
   set_object_input_branch_address( etree, "mc_py", ev.mc_nu_daughter_py_ );
   set_object_input_branch_address( etree, "mc_pz", ev.mc_nu_daughter_pz_ );
+
+
+
+  set_object_input_branch_address( etree, "mc_endx", ev.mc_nu_daughter_endx_ );
+  set_object_input_branch_address( etree, "mc_endy", ev.mc_nu_daughter_endy_ );
+  set_object_input_branch_address( etree, "mc_endz", ev.mc_nu_daughter_endz_ );
 
   // GENIE and other systematic variation weights
   bool has_genie_mc_weights = ( etree.GetBranch("weightSpline") != nullptr );
@@ -212,6 +265,8 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   set_output_branch_address( out_tree, "tuned_cv_weight",
     &ev.tuned_cv_weight_, create, "tuned_cv_weight/F" );
 
+
+
   // If MC weights are available, prepare to store them in the output TTree
   if ( ev.mc_weights_map_ ) {
 
@@ -244,7 +299,16 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   set_output_branch_address( out_tree, "nslice", &ev.nslice_, create,
     "nslice/I" );
 
-  // *** Branches copied directly from the input ***
+  set_output_branch_address( out_tree, "run", &ev.run_,
+  create, "run/I" );
+
+  set_output_branch_address( out_tree, "subrun", &ev.subrun_,
+    create, "subrun/I" );
+
+  set_output_branch_address( out_tree, "evt", &ev.evt_,
+    create, "evt/I" );
+
+ // *** Branches copied directly from the input ***
 
   // Cosmic rejection parameters for numu CC inclusive selection
   set_output_branch_address( out_tree, "topological_score",
@@ -284,6 +348,37 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
 
   set_output_branch_address( out_tree, "mc_interaction",
     &ev.mc_nu_interaction_type_, create, "mc_interaction/I" );
+
+
+  if( ev.mc_generator_pdg_){
+    set_object_output_branch_address< std::vector<int> >( out_tree, 
+        "mc_generator_pdg", ev.mc_generator_pdg_, create );
+
+    set_object_output_branch_address< std::vector<int> >( out_tree, 
+        "mc_generator_rescatter", ev.mc_generator_rescatter_, create );
+    set_object_output_branch_address< std::vector<int> >( out_tree, 
+        "mc_generator_mother", ev.mc_generator_mother_, create );
+    set_object_output_branch_address< std::vector<int> >( out_tree, 
+        "mc_generator_trackid", ev.mc_generator_trackid_, create );
+    set_object_output_branch_address< std::vector<int> >( out_tree, 
+        "mc_generator_statuscode", ev.mc_generator_statuscode_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, 
+        "mc_generator_E", ev.mc_generator_E_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, 
+        "mc_generator_px", ev.mc_generator_px_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, 
+        "mc_generator_py", ev.mc_generator_py_, create );
+    set_object_output_branch_address< std::vector<float> >( out_tree, 
+        "mc_generator_pz", ev.mc_generator_pz_, create );
+
+
+
+
+
+
+
+
+  }
 
   // PFParticle properties
   set_object_output_branch_address< std::vector<unsigned int> >( out_tree,
@@ -431,4 +526,35 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
 
   set_object_output_branch_address< std::vector<float> >( out_tree, "mc_pz",
     ev.mc_nu_daughter_pz_, create );
+    ////////////////////////
+    // new 
+    ///////////////////
+    
+  if ( ev.track_chi2_muon_ ) {
+    set_object_output_branch_address< std::vector<float> >( out_tree,
+      "trk_pid_chimu_v", ev.track_chi2_muon_, create );
+  }
+    
+    
+ set_object_output_branch_address< std::vector<float> >( out_tree,
+   "trk_pid_chipi_v", ev.track_chi2_pion_, create );
+ 
+ set_object_output_branch_address< std::vector<float> >( out_tree,
+   "trk_pid_chika_v", ev.track_chi2_kaon_, create );
+     
+ set_object_output_branch_address< std::vector<float> >( out_tree,
+   "trk_bragg_mu_v", ev.trk_bragg_mu_v_, create );
+
+ //set_object_output_branch_address< std::vector<float> >( out_tree,
+ //       "trk_bragg_pion_v", ev.trk_bragg_pion_v_, create );
+
+ set_object_output_branch_address< std::vector<float> >( out_tree,
+       "trk_bragg_p_v", ev.trk_bragg_p_v_, create );
+ 
+ set_object_output_branch_address< std::vector<float> >( out_tree,
+       "trk_bragg_mip_v", ev.trk_bragg_mip_v_, create );  
+  
+    
+    
+    
 }

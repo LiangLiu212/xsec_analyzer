@@ -51,3 +51,6 @@ void DummySelection::define_category_map() {
   std::map< int, std::pair< std::string, int > >
     temp_map = { { 0, { "Unknown", 0 } } };
 }
+
+void DummySelection::define_additional_input_branches(TTree& etree){
+}

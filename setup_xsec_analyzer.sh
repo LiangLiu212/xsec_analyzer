@@ -11,8 +11,8 @@ if [ "$MY_OS_REL" = "AlmaLinux" ]; then
   spack load root@6.28.12 arch=linux-almalinux9-x86_64_v3
 elif [ "$MY_OS_REL" = "Scientific Linux" ]; then
   # On SL7, we get ROOT as a side-effect of setting up uboonecode
-  source /cvmfs/uboone.opensciencegrid.org/products/setup_uboone.sh
-  setup uboonecode v08_00_00_84 -q e17:prof
+  source /cvmfs/uboone.opensciencegrid.org/products/setup_uboone_mcc9.sh
+  setup uboonecode v08_00_00_85 -q e17:prof
 else
   echo "WARNING: Unrecognized OS name \"${MY_OS_REL}\""
   echo "Unable to automatically set up ROOT"
@@ -35,3 +35,7 @@ else
   # Assume a GNU/Linux platform
   export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${THIS_DIRECTORY}/lib
 fi
+
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/exp/uboone/app/users/mastbaum/xgboost/build/lib64
+unset PYTHONHOME
+unset PYTHONPATH

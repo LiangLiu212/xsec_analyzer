@@ -127,7 +127,7 @@ void CC1mu2p0pi::compute_reco_observables( AnalysisEvent* Event ) {
     Reco_CosMuPsum = MuonMomentumVector
       .Angle( ProtonSummedMomentumVector );
 
-    STVTools stv_tools;
+    STV_Tools stv_tools;
     stv_tools.CalculateSTVs( MuonMomentumVector, ProtonSummedMomentumVector,
       MuonEnergy, ProtonSummedEnergy );
 
@@ -215,7 +215,7 @@ void CC1mu2p0pi::compute_true_observables( AnalysisEvent* Event ) {
     double ProtonSum_TrueE_GeV
       = LeadingProton_TrueE_GeV+RecoilProton_TrueE_GeV;
 
-    STVTools stv_tools;
+    STV_Tools stv_tools;
     stv_tools.CalculateSTVs( Muon_TVector3True, ProtonSum_TVector3True,
       Muon_TrueE_GeV, ProtonSum_TrueE_GeV,CalcType );
 
@@ -757,4 +757,6 @@ void CC1mu2p0pi::reset() {
 void CC1mu2p0pi::define_category_map() {
   // Use the shared category map for 1p/2p/Np/Xp
   categ_map_ = CC1muXp_MAP;
+}
+void CC1mu2p0pi::define_additional_input_branches(TTree& etree){
 }

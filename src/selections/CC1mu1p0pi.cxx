@@ -76,7 +76,7 @@ void CC1mu1p0pi::compute_reco_observables( AnalysisEvent* Event ) {
     TVector3CandidateProton.SetTheta(CandidateProtonTrackTheta); // rad
     TVector3CandidateProton.SetPhi(CandidateProtonTrackPhi); // rad
 
-    STVTools stv_tools;
+    STV_Tools stv_tools;
     stv_tools.CalculateSTVs( TVector3CandidateMuon, TVector3CandidateProton,
       CandidateMuE_GeV, CandidatePE_GeV, CalcType);
 
@@ -184,7 +184,7 @@ void CC1mu1p0pi::compute_true_observables( AnalysisEvent* Event ) {
       TMath::Power(Proton_TrueMomentum_GeV, 2.)
       + TMath::Power(PROTON_MASS,2.) ); // GeV
 
-    STVTools stv_tools;
+    STV_Tools stv_tools;
     stv_tools.CalculateSTVs( Muon_TVector3True, Proton_TVector3True,
       Muon_TrueE_GeV, Proton_TrueE_GeV, CalcType );
 
@@ -862,4 +862,7 @@ void CC1mu1p0pi::reset() {
 void CC1mu1p0pi::define_category_map() {
   // Use the shared category map for 1p/2p/Np/Xp
   categ_map_ = CC1muXp_MAP;
+}
+
+void CC1mu1p0pi::define_additional_input_branches(TTree& etree){
 }

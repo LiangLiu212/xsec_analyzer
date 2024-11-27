@@ -102,7 +102,7 @@ int main( int argc, char* argv[] ) {
   std::cout << "Processing systematic universes for a total of "
 	    << input_files.size() << " input ntuple files\n";
 
-  ROOT::EnableImplicitMT();
+  //ROOT::EnableImplicitMT();
 
   // Store the name of the root TDirectoryFile created by the UniverseMaker
   // objects below. We will use it to ensure that the MCC9SystematicsCalculator
@@ -148,7 +148,6 @@ int main( int argc, char* argv[] ) {
     counter += 1;
   } // loop over input files
 
-  std::cout << "\nCalculating total event counts using all input files:\n";
 
   // Use a temporary MCC9SystematicsCalculator object to automatically calculate
   // the total event counts in each universe across all input files. Since the
@@ -158,7 +157,8 @@ int main( int argc, char* argv[] ) {
   // MCC9SystematicsCalculator class to use the default systematics
   // configuration file.
 
-  MCC9SystematicsCalculator unfolder( output_file_name, "", tdirfile_name );
+  // std::cout << "\nCalculating total event counts using all input files:\n";
+  // MCC9SystematicsCalculator unfolder( output_file_name, "", tdirfile_name );
 
   return 0;
 }

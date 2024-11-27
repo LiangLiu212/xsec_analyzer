@@ -139,6 +139,8 @@ void UniverseMaker::prepare_formulas() {
     std::string category_cuts = sel_for_categories_->name()
       + "_EventCategory == " + str_category;
 
+    std::cout << category_cuts << std::endl;
+
     auto cbf = std::make_unique< TTreeFormula >(
       category_formula_name.c_str(), category_cuts.c_str(), &input_chain_ );
 
@@ -166,6 +168,8 @@ void UniverseMaker::build_universes(
   }
 
   WeightHandler wh;
+//#define __TEST_MT__
+#ifndef __TEST_MT__
   wh.set_branch_addresses( input_chain_, universe_branch_names );
 
   // Make sure that we always have branches set up for the CV correction
@@ -185,11 +189,17 @@ void UniverseMaker::build_universes(
   // used in each vector of weights
   input_chain_.GetEntry( 0 );
 
+
   // Now prepare the vectors of Universe objects with the correct sizes
+  const auto& category_map = sel_for_categories_->category_map();
+  Universe::set_num_categories( category_map.size() );
+ //     std::cout << "DEBUG : " << __FILE__ << " " << __LINE__ << "  " << category_map.size() << std::endl;
+  
   this->prepare_universes( wh );
 
   int treenumber = 0;
-  for ( long long entry = 0; entry < input_chain_.GetEntries(); ++entry ) {
+  int totel_entries = input_chain_.GetEntries();
+  for ( long long entry = 0; entry < totel_entries; ++entry ) {
     // Load the TTree for the current TChain entry
     input_chain_.LoadTree( entry );
 
@@ -346,6 +356,7 @@ void UniverseMaker::build_universes(
   } // TChain entries
 
   input_chain_.ResetBranchAddresses();
+#endif
 }
 
 void UniverseMaker::prepare_universes( const WeightHandler& wh ) {
@@ -359,8 +370,10 @@ void UniverseMaker::prepare_universes( const WeightHandler& wh ) {
 
     std::vector< Universe > u_vec;
 
+    
     for ( size_t u = 0u; u < num_universes; ++u ) {
       u_vec.emplace_back( weight_name, u, num_true_bins, num_reco_bins );
+ //     std::cout << "DEBUG : " << __FILE__ << " " << __LINE__ << "  " << num_true_bins << "  " << num_reco_bins << std::endl;
     }
 
     universes_[ weight_name ] = std::move( u_vec );

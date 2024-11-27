@@ -102,7 +102,6 @@ void analyze( const std::vector< std::string >& in_file_names,
 
   while ( true ) {
 
-    //if ( events_entry > 1000) break;
 
     if ( events_entry % 1000 == 0 ) {
       std::cout << "Processing event #" << events_entry << '\n';
@@ -115,6 +114,7 @@ void analyze( const std::vector< std::string >& in_file_names,
     // Set branch addresses for the member variables that will be read
     // directly from the Event TTree.
     set_event_branch_addresses( events_ch, cur_event );
+
 
     // TChain::LoadTree() returns the entry number that should be used with
     // the current TTree object, which (together with the TBranch objects
@@ -144,9 +144,12 @@ void analyze( const std::vector< std::string >& in_file_names,
       sel->apply_selection( &cur_event );
     }
 
+
+
     // We're done. Save the results and move on to the next event.
     out_tree->Fill();
     ++events_entry;
+    //if ( events_entry > (1000 - 1)) break;
   }
 
   for ( auto& sel : selections ) {

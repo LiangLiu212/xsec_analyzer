@@ -21,6 +21,7 @@ public:
   virtual bool define_signal( AnalysisEvent* event ) override final;
   virtual void reset() override final;
   virtual bool selection( AnalysisEvent* event ) override final;
+  virtual void define_additional_input_branches(TTree& etree) override final;
 
 private:
 

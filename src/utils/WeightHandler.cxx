@@ -1,6 +1,6 @@
 // XSecAnalyzer includes
 #include "XSecAnalyzer/WeightHandler.hh"
-
+#include <iostream>
 void WeightHandler::set_branch_addresses( TTree& in_tree,
   const std::vector<std::string>* branch_names )
 {
@@ -13,6 +13,7 @@ void WeightHandler::set_branch_addresses( TTree& in_tree,
 
     auto* branch = dynamic_cast< TBranch* >( lob->At(b) );
     std::string br_name = branch->GetName();
+    std::cout << "DEBUG : " << br_name << std::endl;
 
     // If the user specified a vector of branch names when calling this
     // function, then check the current branch against them to decide whether

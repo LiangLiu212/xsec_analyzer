@@ -1,7 +1,9 @@
 // XSecAnalyzer includes
 #include "XSecAnalyzer/Binning/BinSchemeFactory.hh"
 #include "XSecAnalyzer/Binning/TutorialBinScheme.hh"
-
+#include "XSecAnalyzer/Binning/CCXp0piBinScheme.hh"
+#include "XSecAnalyzer/Binning/JOINTCC0Pi_BinScheme.hh"
+#include "XSecAnalyzer/Binning/Muon_Pmu_Study_CC0Pi.hh"
 BinSchemeFactory::BinSchemeFactory() {
 }
 
@@ -12,6 +14,18 @@ BinSchemeBase* BinSchemeFactory::CreateBinScheme(
 
   if ( bin_scheme_name == "TutorialBinScheme" ) {
     bs = new TutorialBinScheme;
+    bs->Init();
+  }
+  else if(bin_scheme_name == "CCXp0piBinScheme"){
+    bs = new CCXp0piBinScheme;
+    bs->Init();
+  }
+    else if(bin_scheme_name == "JOINTCC0Pi_BinScheme"){
+    bs = new JOINTCC0Pi_BinScheme;
+    bs->Init();
+  }
+      else if(bin_scheme_name == "Muon_Pmu_Study_CC0Pi"){
+    bs = new Muon_Pmu_Study_CC0Pi;
     bs->Init();
   }
   else {

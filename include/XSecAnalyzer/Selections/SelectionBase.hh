@@ -12,7 +12,7 @@
 #include "XSecAnalyzer/AnalysisEvent.hh"
 #include "XSecAnalyzer/FiducialVolume.hh"
 #include "XSecAnalyzer/Constants.hh"
-#include "XSecAnalyzer/STVTools.hh"
+#include "XSecAnalyzer/STV_Tools.hh"
 
 class SelectionBase {
 
@@ -137,12 +137,12 @@ protected:
   virtual void define_constants() = 0;
   virtual void define_category_map() = 0;
   virtual void reset() = 0;
-  void define_additional_input_branches() {};
+  virtual void define_additional_input_branches(TTree& etree) = 0;
 
   TTree* out_tree_;
   bool need_to_create_branches_;
 
-  STVTools stv_tools_;
+  STV_Tools stv_tools_;
 
 protected:
 
@@ -153,6 +153,15 @@ private:
   std::string selection_name_;
   int num_passed_events_;
 
+  //std::vector<bool*> Pointer_Bool;
+  //std::vector<double*> Pointer_Double;
+  //std::vector<float*> Pointer_Float;
+  //std::vector<int*> Pointer_Integer;
+  //std::vector<std::vector<int>*> Pointer_VectorInteger;
+  //std::vector<TVector3*> Pointer_TVector;
+  //std::vector<std::vector<double>*> Pointer_STDVector;
+  //std::vector<std::vector<std::vector<float>>*> Pointer_VectorVectorFloat;
+//
   int event_category_;
 
   bool selected_;

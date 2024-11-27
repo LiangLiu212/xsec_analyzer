@@ -29,7 +29,10 @@ LIB_DIR := lib
 ROOT_DICTIONARY := $(LIB_DIR)/dictionaries.o
 SHARED_LIB := $(LIB_DIR)/libXSecAnalyzer.$(SHARED_LIB_SUFFIX)
 
-CXXFLAGS := $(shell root-config --cflags) -O3 -I$(INCLUDE_DIR)
+XGBOOST=/exp/uboone/app/users/mastbaum/xgboost/build
+CC0PI_ANALYZER_FLAGS = -I${XGBOOST}/include -L${XGBOOST}/lib64 -lxgboost -g
+
+CXXFLAGS := $(shell root-config --cflags) $(CC0PI_ANALYZER_FLAGS) -O0 -g -I$(INCLUDE_DIR)
 LDFLAGS := $(shell root-config --libs) -L$(LIB_DIR) -lXSecAnalyzer
 
 # Source files to use when building the main shared library
@@ -45,7 +48,7 @@ SHARED_OBJECTS := $(SHARED_SOURCES:.cxx=.o)
 .INTERMEDIATE: $(ROOT_DICTIONARY)
 
 all: $(SHARED_LIB) bin/ProcessNTuples bin/univmake bin/SlicePlots \
-  bin/Unfolder bin/BinScheme bin/StandaloneUnfold
+  bin/Unfolder bin/BinScheme bin/StandaloneUnfold  bin/ProcessNTuplesMT
 
 $(ROOT_DICTIONARY):
 	rootcling -f $(LIB_DIR)/dictionaries.cc -c LinkDef.hh
@@ -62,7 +65,13 @@ $(SHARED_LIB): $(ROOT_DICTIONARY) $(SHARED_OBJECTS)
 bin/ProcessNTuples: src/app/ProcessNTuples.C $(SHARED_LIB)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O3 -o $@ $<
 
+bin/ProcessNTuplesMT: src/app/ProcessNTuplesMT.C $(SHARED_LIB)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O3 -o $@ $<
+
 bin/univmake: src/app/univmake.C $(SHARED_LIB)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O3 -o $@ $<
+
+bin/univmakeMT: src/app/univmakeMT.C $(SHARED_LIB)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -O3 -o $@ $<
 
 bin/SlicePlots: src/app/Slice_Plots.C $(SHARED_LIB)
