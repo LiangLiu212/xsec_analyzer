@@ -353,6 +353,7 @@ class UniverseMaker {
 
     // Add an ntuple input file to the owned TChain
     void add_input_file( const std::string& input_file_name );
+    void setup_parallel(const int i, const int n);
 
     // Access the bin definitions
     inline const auto& true_bins() const { return true_bins_; }
@@ -386,6 +387,37 @@ class UniverseMaker {
     // Returns the name of the TDirectoryFile that will be used to hold the
     // universe histograms when they are written to the output ROOT file
     const std::string& dir_name() const { return output_directory_name_; }
+
+
+    // build and save the universe in memory efficient way
+    //void build_universes_memory_efficient(const std::string& output_file_name, 
+    //    const std::string& subdirectory_name);
+
+
+    // build and save universes in a memory efficient way
+    // instead of declaring all universes by prepare_universes()
+    // saving all the bin indices and weights into a temporary root file
+    // and then Fill() the histograms interactively
+    //  - loop all the universes; 
+    //  - create a universe in the looping
+    //  - fill histograms
+    //  - free the universe
+
+    // Does the actual calculation of the event histograms across the
+    // various systematic universes. The optional argument points to a vector
+    // of branch names that will be used to retrieve systematic universe
+    // weights. If it is omitted, all available ones will be auto-detected and
+    // used.
+    void build_universes_memory_efficient( const std::string* output_file_name, const std::string* subdirectory_name,
+      const std::vector<std::string>* universe_branch_names = nullptr );
+
+    // Overloaded version of the function that takes a reference the
+    // vector of universe branch names (for convenience). The behavior
+    // is the same as the original, but in this case the explicit vector of
+    // branch names definitely exists.
+    void build_universes_memory_efficient(const std::string& output_file_name, const std::string& subdirectory_name,
+      const std::vector<std::string>& universe_branch_names );
+
 
   protected:
 
@@ -447,4 +479,6 @@ class UniverseMaker {
     // std::unique_ptr< SelectionBase > sel_for_categories_;
     //FIXME: using normal pointer to avoid invalid pointer error
     SelectionBase *sel_for_categories_;
+      int ipara;
+      int npara;
 };
