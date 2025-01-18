@@ -1,5 +1,7 @@
 // XSecAnalyzer includes
 #include "XSecAnalyzer/SystematicsCalculator.hh"
+#include <filesystem>
+#include <TSystem.h>
 
 void set_stats_and_dir( Universe& univ ) {
   univ.hist_reco_->SetStats( false );
@@ -447,10 +449,38 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
       bool is_reweightable_mc = ntuple_type_is_reweightable_mc( type );
       bool is_mc = ntuple_type_is_mc( type );
 
+      // Using a index and file_set_size to count the 
+      // multisims of detvars
+      int detvar_index = 0;
+      int file_set_size = file_set.size();
+      double detvar_file_pot = 0.;
+
+      // before 
+      std::vector<double> file_pot_vec;
+      for ( const std::string& file_name : file_set ) {
+        if ( is_mc ) {
+          // MC files have the simulated POT stored alongside the ntuple
+          // TODO: use the TDirectoryFile to handle this rather than
+          // pulling it out of the original ntuple file
+          TFile temp_mc_file( file_name.c_str(), "read" );
+          TParameter<float>* temp_pot = nullptr;
+          temp_mc_file.GetObject( "summed_pot", temp_pot );
+          if ( !temp_pot ) throw std::runtime_error(
+            "Missing POT in MC file!" );
+          file_pot_vec.push_back(temp_pot->GetVal());
+        }
+        else {
+          // We can ask the FilePropertiesManager for the data POT values
+          file_pot_vec.push_back(fpm.data_norm_map().at( file_name ).pot_);
+        }
+
+      }
+
       for ( const std::string& file_name : file_set ) {
 
         std::cout << "PROCESSING universes for " << file_name << '\n';
 
+        detvar_index++;
         // Default to assuming that the current ntuple file is not a fake data
         // sample. If it is a data sample (i.e., if is_mc == false), then the
         // value of this flag will be reconsidered below.
@@ -469,6 +499,7 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           if ( !temp_pot ) throw std::runtime_error(
             "Missing POT in MC file!" );
           file_pot = temp_pot->GetVal();
+          if(is_detVar) detvar_file_pot += file_pot;
         }
         else {
           // We can ask the FilePropertiesManager for the data POT values
@@ -668,7 +699,8 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           // exception when a duplicate is encountered.
           // TODO: revisit this when you have detVar samples for all runs
           if ( is_detVar && detvar_universes_.count(type) ) {
-            throw std::runtime_error( "Duplicate detVar ntuple file!" );
+          //  throw std::runtime_error( "Duplicate detVar ntuple file!" );
+            temp_univ_ptr = detvar_universes_.at( type ).get();
           }
           // For the alternate CV sample, if a previous universe already
           // exists in the map, then get access to it via a pointer
@@ -701,21 +733,29 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           auto hist_true2d = get_object_unique_ptr< TH2D >(
             "unweighted_0_true2d", *subdir );
 
-          double temp_scale_factor = 1.;
-          if ( is_altCV ) {
-            // AltCV ntuple files are available for all runs, so scale
-            // each individually to the BNB data POT for the current run
-            double temp_run_pot = run_to_bnb_pot_map.at( run );
-            temp_scale_factor = temp_run_pot / file_pot;
+//          double temp_scale_factor = 1.;
+//          if ( is_altCV ) {
+//            // AltCV ntuple files are available for all runs, so scale
+//            // each individually to the BNB data POT for the current run
+//            double temp_run_pot = run_to_bnb_pot_map.at( run );
+//            temp_scale_factor = temp_run_pot / file_pot;
+//          }
+//          else {
+//            // Scale all detVar universe histograms from the simulated POT to
+//            // the *total* BNB data POT for all runs analyzed. Since we only
+//            // have detVar samples for Run 3b, we assume that they can be
+//            // applied globally in this step.
+//            // TODO: revisit this as appropriate
+//            temp_scale_factor = total_bnb_data_pot_ / file_pot;
+//          }
+
+          double total_dv_mc_pot =0;
+          for(auto& pot: file_pot_vec){
+            total_dv_mc_pot+=pot;
           }
-          else {
-            // Scale all detVar universe histograms from the simulated POT to
-            // the *total* BNB data POT for all runs analyzed. Since we only
-            // have detVar samples for Run 3b, we assume that they can be
-            // applied globally in this step.
-            // TODO: revisit this as appropriate
-            temp_scale_factor = total_bnb_data_pot_ / file_pot;
-          }
+
+          double temp_run_pot = run_to_bnb_pot_map.at( run );
+          double temp_scale_factor = (temp_run_pot / total_dv_mc_pot) * (file_pot / total_dv_mc_pot);
 
           // Apply the scaling factor defined above to all histograms that
           // will be owned by the new Universe
@@ -740,10 +780,10 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
           // If one wasn't present before, then move the finished Universe
           // object into the map
-          if ( is_detVar ) {
+          if ( is_detVar && detvar_universes_.count(type) == 0) {
             detvar_universes_[ type ].reset( temp_univ.release() );
           }
-          else if ( !prior_altCV ) { // is_altCV
+          else if ( is_altCV && !prior_altCV ) { // is_altCV
             alt_cv_universes_[ type ].reset( temp_univ.release() );
           }
 
