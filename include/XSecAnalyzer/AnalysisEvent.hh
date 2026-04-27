@@ -196,6 +196,54 @@ public:
   float mc_elec_e_ = BOGUS;
 
   //================================================================================================================
+  // ** NC1p old-format ntuple members (SingleProtonAna/tree) **
+
+  // Truth: pre-computed NC1p signal flag and true proton kinematics
+  int   evt_gen_nc1p_        = BOGUS_INT;
+  float evt_gen_nc1p_ke_     = BOGUS;
+  float evt_gen_nc1p_costheta_ = BOGUS;
+  float evt_gen_nc1p_mom_    = BOGUS;
+  float evt_gen_nc1p_q2_gen_ = BOGUS;
+
+  // Truth: additional MC info needed for categorisation
+  int mc_n_proton_ = BOGUS_INT;
+  int mc_mode_     = BOGUS_INT;
+
+  // Reco: pre-computed NC1p selection flag
+  int evt_reco_1p_ = BOGUS_INT;
+
+  // Reco: per-track vectors used for proton candidate finding and BDT
+  MyPointer< std::vector<bool>  > is_reco_nc1p_;
+  MyPointer< std::vector<int>   > isinFV_;
+  MyPointer< std::vector<float> > reco_length_v_;
+  MyPointer< std::vector<float> > reco_theta_f2_v_;
+  MyPointer< std::vector<float> > reco_phi_f2_v_;
+  MyPointer< std::vector<float> > reco_start_x_v_;
+  MyPointer< std::vector<float> > reco_start_y_v_;
+  MyPointer< std::vector<float> > reco_start_z_v_;
+  MyPointer< std::vector<float> > reco_end_x_v_;
+  MyPointer< std::vector<float> > reco_end_y_v_;
+  MyPointer< std::vector<float> > reco_end_z_v_;
+  MyPointer< std::vector<float> > reco_start_x_f2_v_;
+  MyPointer< std::vector<float> > reco_start_y_f2_v_;
+  MyPointer< std::vector<float> > reco_start_z_f2_v_;
+  MyPointer< std::vector<float> > reco_end_x_f2_v_;
+  MyPointer< std::vector<float> > reco_end_y_f2_v_;
+  MyPointer< std::vector<float> > reco_end_z_f2_v_;
+  MyPointer< std::vector<float> > chi2_p_0_v_;
+  MyPointer< std::vector<float> > chi2_p_1_v_;
+  MyPointer< std::vector<float> > chi2_p_2_v_;
+  MyPointer< std::vector<float> > start_dedx_2_v_;   // NB: labelled "end_dedx_2" in BDT
+  MyPointer< std::vector<float> > total_dedx_2_v_;
+  MyPointer< std::vector<float> > reco_mom_proton_v_;
+
+  // NC1p old-format systematic weight branches
+  MyPointer< std::vector<std::string>           > evtwgt_genie_multisim_funcname_;
+  MyPointer< std::vector<std::vector<double> >  > evtwgt_genie_multisim_weight_;
+  MyPointer< std::vector<std::vector<double> >  > evtwgt_flux_multisim_weight_;
+  MyPointer< std::vector<std::vector<double> >  > evtwgt_g4_multisim_weight_;
+
+  //================================================================================================================
   // ** Reconstructed observables **
 
 };

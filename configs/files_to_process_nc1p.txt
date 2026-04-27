@@ -1,0 +1,31 @@
+# Format file name run id (to load BDT weights)
+#
+# CV files
+#
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_bnb.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_extbnb.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_dirt.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp.root 1
+#
+# Systematic files
+#
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_attenuation.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_down.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_rayleigh.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_default.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_flux.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_g4.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_pm.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_1.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_2.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_3.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_4.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_5.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_fsi.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_pm.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_recomb2.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_sce.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_xz.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_yz.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_x.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_yz.root 1

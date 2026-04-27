@@ -46,10 +46,27 @@ void analyze( const std::string& input_filename,
     std::cout << "\t\t- " << sel_name << '\n';
   }
 
+  // Detect input ntuple format.
+  // File types prefixed with "nc1p_" use the old SingleProtonAna tree layout;
+  // everything else uses the PeLEE NeutrinoSelectionFilter layout.
+  const bool is_nc1p_format = ( file_type.substr( 0, 5 ) == "nc1p_" );
+  const bool nc1p_is_mc     = ( file_type != "nc1p_BNB" &&
+                                 file_type != "nc1p_EXT" );
+
+  const std::string events_tree_name = is_nc1p_format
+    ? "SingleProtonAna/tree"
+    : "nuselection/NeutrinoSelectionFilter";
+  const std::string subruns_tree_name = is_nc1p_format
+    ? "SingleProtonAna/pottree"
+    : "nuselection/SubRun";
+
+  std::cout << "\tntuple format: "
+            << ( is_nc1p_format ? "NC1p (old)" : "PeLEE (new)" ) << '\n';
+
   // Get the TTrees containing the event ntuples and subrun POT information
   // Use TChain objects for simplicity in manipulating multiple files
-  TChain events_ch( "nuselection/NeutrinoSelectionFilter" );
-  TChain subruns_ch( "nuselection/SubRun" );
+  TChain events_ch( events_tree_name.c_str() );
+  TChain subruns_ch( subruns_tree_name.c_str() );
   events_ch.Add( input_filename.c_str() );
   subruns_ch.Add( input_filename.c_str() );
 
@@ -116,7 +133,12 @@ void analyze( const std::string& input_filename,
 
     // Set branch addresses for the member variables that will be read
     // directly from the Event TTree.
-    set_event_branch_addresses( events_ch, cur_event );
+    if ( is_nc1p_format ) {
+      set_event_branch_addresses_nc1p( events_ch, cur_event );
+    }
+    else {
+      set_event_branch_addresses( events_ch, cur_event );
+    }
 
     // TChain::LoadTree() returns the entry number that should be used with
     // the current TTree object, which (together with the TBranch objects
@@ -133,33 +155,35 @@ void analyze( const std::string& input_filename,
     // TChain::SetBranchAddress() above
     events_ch.GetEntry( events_entry );
 
-    // Handle integrating signal enhanced samples
-    // note that these are typically generated only in the active volume
-    // compared with full overlay that is generated for the whole cryostat
-    // and may only be generated for CC events, excluding NC
-    
-    // *** Intrinsic Nue ***
-    if (file_type == "nueMC" || file_type == "nueDV") {
-      // inverse cut, to avoid any accidental double-counting
-      if ( !(std::abs(cur_event.mc_nu_pdg_) == 12 && cur_event.mc_nu_ccnc_ == 0 && point_inside_FV(AV, cur_event.mc_nu_vx_, cur_event.mc_nu_vy_, cur_event.mc_nu_vz_)) ) {
-        ++events_entry;
-        continue;
-      }
+    if ( is_nc1p_format ) {
+      // Build mc_weights_map_ from the old-format weight branches so that
+      // UniverseMaker can find correctly-named weight vectors downstream.
+      build_nc1p_weight_map( cur_event );
+      // Set is_mc_ from the file type since the old format has no is_mc branch.
+      cur_event.is_mc_ = nc1p_is_mc;
     }
-    if (file_type == "numuMC") {
-      if ( (std::abs(cur_event.mc_nu_pdg_) == 12 && cur_event.mc_nu_ccnc_ == 0 && point_inside_FV(AV, cur_event.mc_nu_vx_, cur_event.mc_nu_vy_, cur_event.mc_nu_vz_)) ) {
-        ++events_entry;
-        continue;
+    else {
+      // Handle integrating signal enhanced samples (PeLEE format only)
+      // *** Intrinsic Nue ***
+      if (file_type == "nueMC" || file_type == "nueDV") {
+        if ( !(std::abs(cur_event.mc_nu_pdg_) == 12 && cur_event.mc_nu_ccnc_ == 0
+              && point_inside_FV(AV, cur_event.mc_nu_vx_, cur_event.mc_nu_vy_, cur_event.mc_nu_vz_)) ) {
+          ++events_entry;
+          continue;
+        }
       }
-    }
-
-    // *** Add any other signal enhanced samples here ***
-
-    // NuMI specific: configure normalisation weight
-    // dirt scaling
-    if (useNuMI) {
-      if (file_type == "dirtMC") cur_event.normalisation_weight_ = 0.65;
-      else cur_event.normalisation_weight_ = 1.0;
+      if (file_type == "numuMC") {
+        if ( (std::abs(cur_event.mc_nu_pdg_) == 12 && cur_event.mc_nu_ccnc_ == 0
+              && point_inside_FV(AV, cur_event.mc_nu_vx_, cur_event.mc_nu_vy_, cur_event.mc_nu_vz_)) ) {
+          ++events_entry;
+          continue;
+        }
+      }
+      // NuMI: configure normalisation weight
+      if (useNuMI) {
+        if (file_type == "dirtMC") cur_event.normalisation_weight_ = 0.65;
+        else cur_event.normalisation_weight_ = 1.0;
+      }
     }
 
     // Set the output TTree branch addresses, creating the branches if needed

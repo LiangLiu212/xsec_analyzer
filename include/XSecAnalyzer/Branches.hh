@@ -216,6 +216,150 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
   SetBranchAddress(etree, "elec_e", &ev.mc_elec_e_ ); // Electron energy
 }
 
+// Sets branch addresses for the OLD NC1p ntuple format (SingleProtonAna/tree).
+// Maps old branch names onto existing AnalysisEvent members where semantics
+// match, and into the NC1p-specific members otherwise.
+void set_event_branch_addresses_nc1p(TTree& etree, AnalysisEvent& ev)
+{
+  // --- Truth: reuse existing AnalysisEvent members ---
+  SetBranchAddress(etree, "mc_nupdg",   &ev.mc_nu_pdg_   );
+  SetBranchAddress(etree, "mc_ccnc",    &ev.mc_nu_ccnc_  );
+  SetBranchAddress(etree, "mc_nu_vtxx", &ev.mc_nu_vx_    );
+  SetBranchAddress(etree, "mc_nu_vtxy", &ev.mc_nu_vy_    );
+  SetBranchAddress(etree, "mc_nu_vtxz", &ev.mc_nu_vz_    );
+  SetBranchAddress(etree, "mc_enu",     &ev.mc_nu_energy_);
+
+  // CV weights – stored in the scalar members used later to build the map
+  bool has_mc_wgts = ( etree.GetBranch("mc_wgt_v4a") != nullptr );
+  if ( has_mc_wgts ) {
+    SetBranchAddress(etree, "mc_wgt_v4a",    &ev.spline_weight_    );
+    SetBranchAddress(etree, "mc_wgt_tunedcv",&ev.tuned_cv_weight_  );
+  }
+
+  // --- NC1p-specific truth members ---
+  SetBranchAddress(etree, "evt_gen_nc1p",          &ev.evt_gen_nc1p_        );
+  SetBranchAddress(etree, "evt_gen_nc1p_ke",        &ev.evt_gen_nc1p_ke_     );
+  SetBranchAddress(etree, "evt_gen_nc1p_costheta",  &ev.evt_gen_nc1p_costheta_);
+  SetBranchAddress(etree, "evt_gen_nc1p_mom",       &ev.evt_gen_nc1p_mom_    );
+  SetBranchAddress(etree, "evt_gen_nc1p_q2_gen",    &ev.evt_gen_nc1p_q2_gen_ );
+  SetBranchAddress(etree, "mc_n_proton",            &ev.mc_n_proton_         );
+  SetBranchAddress(etree, "mc_mode",                &ev.mc_mode_             );
+
+  // --- Reco selection flag ---
+  SetBranchAddress(etree, "evt_reco_1p", &ev.evt_reco_1p_ );
+
+  // --- Per-track reco branches ---
+  set_object_input_branch_address(etree, "is_reco_nc1p",    ev.is_reco_nc1p_   );
+  set_object_input_branch_address(etree, "isinFV",          ev.isinFV_         );
+  set_object_input_branch_address(etree, "reco_length",     ev.reco_length_v_  );
+  set_object_input_branch_address(etree, "reco_theta_f2",   ev.reco_theta_f2_v_);
+  set_object_input_branch_address(etree, "reco_phi_f2",     ev.reco_phi_f2_v_  );
+  set_object_input_branch_address(etree, "reco_start_x",    ev.reco_start_x_v_ );
+  set_object_input_branch_address(etree, "reco_start_y",    ev.reco_start_y_v_ );
+  set_object_input_branch_address(etree, "reco_start_z",    ev.reco_start_z_v_ );
+  set_object_input_branch_address(etree, "reco_end_x",      ev.reco_end_x_v_   );
+  set_object_input_branch_address(etree, "reco_end_y",      ev.reco_end_y_v_   );
+  set_object_input_branch_address(etree, "reco_end_z",      ev.reco_end_z_v_   );
+  set_object_input_branch_address(etree, "reco_start_x_f2", ev.reco_start_x_f2_v_);
+  set_object_input_branch_address(etree, "reco_start_y_f2", ev.reco_start_y_f2_v_);
+  set_object_input_branch_address(etree, "reco_start_z_f2", ev.reco_start_z_f2_v_);
+  set_object_input_branch_address(etree, "reco_end_x_f2",   ev.reco_end_x_f2_v_  );
+  set_object_input_branch_address(etree, "reco_end_y_f2",   ev.reco_end_y_f2_v_  );
+  set_object_input_branch_address(etree, "reco_end_z_f2",   ev.reco_end_z_f2_v_  );
+  set_object_input_branch_address(etree, "chi2_p_0",        ev.chi2_p_0_v_     );
+  set_object_input_branch_address(etree, "chi2_p_1",        ev.chi2_p_1_v_     );
+  set_object_input_branch_address(etree, "chi2_p_2",        ev.chi2_p_2_v_     );
+  set_object_input_branch_address(etree, "start_dedx_2",    ev.start_dedx_2_v_ );
+  set_object_input_branch_address(etree, "total_dedx_2",    ev.total_dedx_2_v_ );
+  set_object_input_branch_address(etree, "reco_mom_proton", ev.reco_mom_proton_v_);
+
+  // --- Systematic weight branches ---
+  bool has_genie = ( etree.GetBranch("evtwgt_genie_multisim_weight") != nullptr );
+  if ( has_genie ) {
+    set_object_input_branch_address(etree, "evtwgt_genie_multisim_funcname",
+      ev.evtwgt_genie_multisim_funcname_);
+    set_object_input_branch_address(etree, "evtwgt_genie_multisim_weight",
+      ev.evtwgt_genie_multisim_weight_);
+  }
+  else {
+    ev.evtwgt_genie_multisim_funcname_.reset( nullptr );
+    ev.evtwgt_genie_multisim_weight_.reset( nullptr );
+  }
+
+  bool has_flux = ( etree.GetBranch("evtwgt_flux_multisim_weight") != nullptr );
+  if ( has_flux ) {
+    set_object_input_branch_address(etree, "evtwgt_flux_multisim_weight",
+      ev.evtwgt_flux_multisim_weight_);
+  }
+  else {
+    ev.evtwgt_flux_multisim_weight_.reset( nullptr );
+  }
+
+  bool has_g4 = ( etree.GetBranch("evtwgt_g4_multisim_weight") != nullptr );
+  if ( has_g4 ) {
+    set_object_input_branch_address(etree, "evtwgt_g4_multisim_weight",
+      ev.evtwgt_g4_multisim_weight_);
+  }
+  else {
+    ev.evtwgt_g4_multisim_weight_.reset( nullptr );
+  }
+
+  // Signal the absence of a `weights` map branch so the output setup does not
+  // try to read one from the input tree.
+  ev.mc_weights_map_.reset( nullptr );
+}
+
+// Populates ev.mc_weights_map_ from the old-format weight branches after a
+// call to GetEntry().  Must be called on every event; uses operator[] on the
+// map so that vectors are created on first call and updated in-place
+// subsequently (preserving the addresses needed by the output TTree).
+void build_nc1p_weight_map(AnalysisEvent& ev)
+{
+  // Ensure the map object exists (it is default-constructed as empty)
+  auto& wmap = *ev.mc_weights_map_;
+
+  // CV weights stored as single-element vectors.
+  // Keys must match SPLINE_WEIGHT_NAME and TUNE_WEIGHT_NAME (without "weight_"
+  // prefix, since set_event_output_branch_addresses prepends it).
+  wmap["splines_general_Spline"]      = { static_cast<double>(ev.spline_weight_)     };
+  wmap["TunedCentralValue_UBGenie"]   = { static_cast<double>(ev.tuned_cv_weight_)   };
+
+  // GENIE multisim weights: one entry per function, 100 universes each.
+  if ( ev.evtwgt_genie_multisim_weight_ && ev.evtwgt_genie_multisim_funcname_ ) {
+    const auto& funcnames = *ev.evtwgt_genie_multisim_funcname_;
+    const auto& weights   = *ev.evtwgt_genie_multisim_weight_;
+    for ( size_t l = 0; l < weights.size(); ++l ) {
+      const std::string key = "genie_multisim_" + funcnames.at(l);
+      auto& vec = wmap[key];
+      vec = weights.at(l);
+    }
+  }
+
+  // Flux multisim weights: 13 variations × 100 universes.
+  if ( ev.evtwgt_flux_multisim_weight_ ) {
+    const auto& weights = *ev.evtwgt_flux_multisim_weight_;
+    for ( size_t l = 0; l < weights.size(); ++l ) {
+      const std::string key = "flux_multisim_" + std::to_string(l);
+      auto& vec = wmap[key];
+      vec = weights.at(l);
+    }
+  }
+
+  // G4 reinteraction multisim weights: sub-indices 1, 3, 4, 5.
+  if ( ev.evtwgt_g4_multisim_weight_ ) {
+    const auto& weights = *ev.evtwgt_g4_multisim_weight_;
+    static const std::vector<int> G4_INDICES = { 1, 3, 4, 5 };
+    for ( int var = 0; var < static_cast<int>(G4_INDICES.size()); ++var ) {
+      int idx = G4_INDICES.at(var);
+      if ( idx < static_cast<int>(weights.size()) ) {
+        const std::string key = "g4_multisim_" + std::to_string(var);
+        auto& vec = wmap[key];
+        vec = weights.at(idx);
+      }
+    }
+  }
+}
+
 // Helper function to set branch addresses for the output TTree
 void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   bool create = false)

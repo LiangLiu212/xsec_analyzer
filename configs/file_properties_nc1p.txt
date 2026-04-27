@@ -1,0 +1,43 @@
+# Format: file_name run file_type [triggers POT (for data only)]
+#
+# Beam-off data
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_extbnb.root 1 extBNB 43162097 0
+#
+# Beam-on data
+#
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_bnb.root 1 onBNB 37154344 1.672e20
+#
+# Dirt MC
+#
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_dirt.root 1 dirtMC
+#
+# Intrinsic nue MC
+#
+#/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp.root 1 nueMC
+#
+# Overlay
+#
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp.root 1 numuMC
+#
+# det var
+#
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_ly_attenuation.root 1 ly_attenuation
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_ly_down.root 1 ly_down
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_ly_rayleigh.root 1 ly_rayleigh
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_detvarmc.root 1 detVarCV
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_flux.root 1 flux
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_g4.root 1 g4
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_genie_pm.root 1 genie_xsec
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_genie_xsec_1.root 1 genie_xsec
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_genie_xsec_2.root 1 genie_xsec
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_genie_xsec_3.root 1 genie_xsec
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_genie_xsec_4.root 1 genie_xsec
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie320_precompound_hadronhp_genie_xsec_5.root 1 genie_xsec
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie_fsi.root 1 genie_fsi
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_overlay_genie_pm.root 1 genie_pm
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_recomb2.root 1 recomb2
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_sce.root 1 sce
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_wiremod_angle_xz.root 1 wiremod_angle_xz
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_wiremod_angle_yz.root 1 wiremod_angle_yz
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_wiremod_x.root 1 wiremod_x
+/exp/uboone/app/users/dinupa/dev_v26_04_20/xsec_analyzer/data/xsec-ana-r1_wiremod_yz.root 1 wiremod_yz
