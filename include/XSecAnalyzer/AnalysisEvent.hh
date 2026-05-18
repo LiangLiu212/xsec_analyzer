@@ -206,8 +206,12 @@ public:
   float evt_gen_nc1p_q2_gen_ = BOGUS;
 
   // Truth: additional MC info needed for categorisation
-  int mc_n_proton_ = BOGUS_INT;
-  int mc_mode_     = BOGUS_INT;
+  int mc_n_proton_            = BOGUS_INT;
+  int mc_mode_                = BOGUS_INT;
+  int mc_n_threshold_muon_    = BOGUS_INT;
+  int mc_n_threshold_proton_  = BOGUS_INT;
+  int mc_n_threshold_pionpm_  = BOGUS_INT;
+  int mc_n_threshold_pion0_   = BOGUS_INT;
 
   // Reco: pre-computed NC1p selection flag
   int evt_reco_1p_ = BOGUS_INT;
@@ -236,6 +240,11 @@ public:
   MyPointer< std::vector<float> > start_dedx_2_v_;   // NB: labelled "end_dedx_2" in BDT
   MyPointer< std::vector<float> > total_dedx_2_v_;
   MyPointer< std::vector<float> > reco_mom_proton_v_;
+
+  // Reco: blip cluster positions (used for upstream-blip cut)
+  MyPointer< std::vector<float> > blip_x_;
+  MyPointer< std::vector<float> > blip_y_;
+  MyPointer< std::vector<float> > blip_z_;
 
   // NC1p old-format systematic weight branches
   MyPointer< std::vector<std::string>           > evtwgt_genie_multisim_funcname_;

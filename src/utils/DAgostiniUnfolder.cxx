@@ -1,5 +1,6 @@
 // Standard library includes
 #include <cfloat>
+#include <iomanip>
 #include <iostream>
 
 // ROOT includes
@@ -71,6 +72,37 @@ UnfoldedMeasurement DAgostiniUnfolder::unfold( const TMatrixD& data_signal,
       mat_ref.Zero();
     }
   }
+
+  // -----------------------------------------------------------------------
+  // Diagnostic printout: all components that enter the unfolding matrix
+  // -----------------------------------------------------------------------
+  auto print_vec = [&]( const char* label, auto get_val, int n ) {
+    std::cout << "\n--- " << label << " ---\n";
+    for ( int i = 0; i < n; ++i )
+      std::cout << "  [" << std::setw(2) << i << "]  "
+                << std::scientific << std::setprecision(6) << get_val(i) << "\n";
+  };
+
+  auto print_mat = [&]( const char* label, const TMatrixD& M ) {
+    std::cout << "\n--- " << label << " [" << M.GetNrows()
+              << " x " << M.GetNcols() << "] ---\n";
+    for ( int r = 0; r < M.GetNrows(); ++r ) {
+      std::cout << "  row " << std::setw(2) << r << ": ";
+      for ( int c = 0; c < M.GetNcols(); ++c )
+        std::cout << std::scientific << std::setprecision(4)
+                  << std::setw(13) << M(r, c);
+      std::cout << "\n";
+    }
+  };
+
+  std::cout << "\n========== D'Agostini unfolding: input components ==========\n";
+  print_mat( "Smearceptance S(reco, true)", smearcept );
+  print_vec( "Efficiency ε(t) = Σ_r S(r,t)", [&](int t){ return eff_vec(t,0); },
+             num_true_signal_bins );
+  print_vec( "Prior true signal n̂_true(t)",
+             [&](int t){ return prior_true_signal(t,0); }, num_true_signal_bins );
+  print_mat( "Background-subtracted data d(r)", data_signal );
+  // -----------------------------------------------------------------------
 
   // Start the iterations for the D'Agostini method
   int it = 0;
@@ -246,6 +278,28 @@ UnfoldedMeasurement DAgostiniUnfolder::unfold( const TMatrixD& data_signal,
   } // D'Agostini method iterations
 
   std::cout << "\t\tD'Agostini unfolding stopped after " << it << " iterations.\n";
+
+  // -----------------------------------------------------------------------
+  // Diagnostic printout: final-iteration components and result
+  // -----------------------------------------------------------------------
+  {
+    // Recompute reco-expected from the final true-signal estimate so we can
+    // show all four ingredients together.
+    TMatrixD final_reco_expected( smearcept,
+      TMatrixD::EMatrixCreatorsOp2::kMult, *true_signal );
+
+    std::cout << "\n========== D'Agostini unfolding: final-iteration components ==========\n";
+    print_vec( "Final true signal estimate n̂_true(t)",
+               [&](int t){ return true_signal->operator()(t,0); },
+               num_true_signal_bins );
+    print_vec( "Final reco expected R(r) = Σ_t S(r,t)·n̂_true(t)",
+               [&](int r){ return final_reco_expected(r,0); },
+               num_ordinary_reco_bins );
+    print_mat( "Final unfolding matrix U(true, reco)  [U = S·n̂/(ε·R)]",
+               *unfold_mat );
+    std::cout << "======================================================================\n\n";
+  }
+  // -----------------------------------------------------------------------
 
   // If we're using A_C, then the unfolding matrix should be used rather than
   // the special error propagation matrix. Do that replacement here for the

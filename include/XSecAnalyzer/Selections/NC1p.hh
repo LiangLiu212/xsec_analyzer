@@ -46,11 +46,15 @@ private:
   // --- Selection cut flags written to the output tree ---
   bool sel_1p_;               // evt_reco_1p == 1
   bool sel_proton_found_;     // valid proton candidate found after quality cuts
+  bool sel_blip_cut_;         // upstream blip count <= 1
   bool sel_bdt_passed_;       // BDT score > BDT_CUT
 
   // --- Signal definition flags ---
   bool sig_nc_interaction_;
+  bool sig_no_muon_;
+  bool sig_no_pions_;
   bool sig_one_proton_above_thresh_;
+  bool sig_is_nu_pdg_;
   bool sig_vertex_in_fv_;
 
   // --- Reconstructed observables ---
@@ -68,8 +72,9 @@ private:
   // --- BDT score ---
   float BDT_Score_;
 
-  // --- Selected proton track index ---
+  // --- Selected proton track index and upstream blip count ---
   int proton_idx_;
+  int reco_nblip_upstream_;
 
   // --- TMVA ---
   TMVA::Reader* bdt_reader_;
@@ -92,4 +97,9 @@ private:
 
   // Run period (1–5), selects the matching BDT weights subdirectory
   int run_period_;
+
+  // Returns the same codes as the legacy VertexIsInFV in make_tree.C:
+  //   -1 = outside TPC FV border, 0 = purely inside FV,
+  //   1-5 = inside one of the geometric dead-wire sub-regions
+  static int blip_vertex_in_fv( float x, float y, float z );
 };

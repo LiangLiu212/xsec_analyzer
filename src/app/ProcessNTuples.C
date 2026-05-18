@@ -86,12 +86,14 @@ void analyze( const std::string& input_filename,
     subruns_ch.SetBranchAddress( "pot", &pot );
     for ( int se = 0; se < subruns_ch.GetEntries(); ++se ) {
       subruns_ch.GetEntry( se );
-      summed_pot += pot;
+      summed_pot += pot * 1.0e16;
     }
   }
 
   TParameter<float>* summed_pot_param = new TParameter<float>( "summed_pot",
     summed_pot );
+
+  if(nc1p_is_mc) { std::cout << "Summed POT: " << summed_pot << std::endl; }
 
   summed_pot_param->Write();
 
@@ -102,13 +104,17 @@ void analyze( const std::string& input_filename,
     selections.emplace_back().reset( sf.CreateSelection(sel_name) );
   }
 
+  // For NC1p data files, suppress MC-only branches in the output tree.
+  // For PeLEE format, preserve existing behavior (all branches always written).
+  const bool include_mc_branches = is_nc1p_format ? nc1p_is_mc : true;
+
   out_file->cd();
   for ( auto& sel : selections ) {
-    sel->setup( out_tree );
+    sel->setup( out_tree, true, include_mc_branches );
   }
 
   // Active volume definition
-  // required for correctly incorporating signal enhanced samples 
+  // required for correctly incorporating signal enhanced samples
   // generated only in active volume rather than full cryostat volume
   FiducialVolume AV = { 0.0, 256.0, -120.0, 120.0, 0.0, 1076.0 };
 
@@ -156,11 +162,13 @@ void analyze( const std::string& input_filename,
     events_ch.GetEntry( events_entry );
 
     if ( is_nc1p_format ) {
-      // Build mc_weights_map_ from the old-format weight branches so that
-      // UniverseMaker can find correctly-named weight vectors downstream.
-      build_nc1p_weight_map( cur_event );
       // Set is_mc_ from the file type since the old format has no is_mc branch.
       cur_event.is_mc_ = nc1p_is_mc;
+      // Build the weight map only for MC: data files carry no systematic weights
+      // and should not have weight branches in the output tree.
+      if ( nc1p_is_mc ) {
+        build_nc1p_weight_map( cur_event );
+      }
     }
     else {
       // Handle integrating signal enhanced samples (PeLEE format only)
@@ -193,7 +201,8 @@ void analyze( const std::string& input_filename,
       create_them = true;
       created_output_branches = true;
     }
-    set_event_output_branch_addresses(*out_tree, cur_event, create_them );
+    set_event_output_branch_addresses(*out_tree, cur_event, create_them,
+      include_mc_branches);
 
     for ( auto& sel : selections ) {
       sel->apply_selection( &cur_event );

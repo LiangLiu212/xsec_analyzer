@@ -673,16 +673,15 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
           // on the same footing below
           Universe* temp_univ_ptr = nullptr;
 
-          // Check whether a prior altCV Universe exists in the map
+          // Check whether a prior detVar or altCV Universe exists in the map
+          bool prior_detVar = detvar_universes_.count( type ) > 0;
           bool prior_altCV = alt_cv_universes_.count( type ) > 0;
 
-          // Right now, we're assuming there's just one detVar ntuple file
-          // per universe. If this assumption is violated, our scaling will
-          // be screwed up. Prevent this from happening by throwing an
-          // exception when a duplicate is encountered.
-          // TODO: revisit this when you have detVar samples for all runs
-          if ( is_detVar && detvar_universes_.count(type) ) {
-            throw std::runtime_error( "Duplicate detVar ntuple file!" );
+          // For the detector variation sample, if a previous universe already
+          // exists in the map (from an earlier run), get access to it so the
+          // current run's contribution can be accumulated into it.
+          if ( is_detVar && prior_detVar ) {
+            temp_univ_ptr = detvar_universes_.at( type ).get();
           }
           // For the alternate CV sample, if a previous universe already
           // exists in the map, then get access to it via a pointer
@@ -716,19 +715,11 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
             "unweighted_0_true2d", *subdir );
 
           double temp_scale_factor = 1.;
-          if ( is_altCV ) {
-            // AltCV ntuple files are available for all runs, so scale
-            // each individually to the BNB data POT for the current run
+          if ( is_altCV || is_detVar ) {
+            // Scale each per-run file to the BNB data POT for that run.
+            // Contributions from multiple runs accumulate in the same Universe.
             double temp_run_pot = run_to_bnb_pot_map.at( run );
             temp_scale_factor = temp_run_pot / file_pot;
-          }
-          else {
-            // Scale all detVar universe histograms from the simulated POT to
-            // the *total* BNB data POT for all runs analyzed. Since we only
-            // have detVar samples for Run 3b, we assume that they can be
-            // applied globally in this step.
-            // TODO: revisit this as appropriate
-            temp_scale_factor = total_bnb_data_pot_ / file_pot;
           }
 
           // Apply the scaling factor defined above to all histograms that
@@ -754,12 +745,13 @@ void SystematicsCalculator::build_universes( TDirectoryFile& root_tdir ) {
 
           // If one wasn't present before, then move the finished Universe
           // object into the map
-          if ( is_detVar ) {
+          if ( is_detVar && !prior_detVar ) {
             detvar_universes_[ type ].reset( temp_univ.release() );
           }
-          else if ( !prior_altCV ) { // is_altCV
+          else if ( is_altCV && !prior_altCV ) {
             alt_cv_universes_[ type ].reset( temp_univ.release() );
           }
+          // else: accumulating into an existing universe — temp_univ discarded
 
         } // detVar and altCV samples
 
@@ -1282,13 +1274,15 @@ std::unique_ptr< CovMatrixMap > SystematicsCalculator::get_covariances() const
 
       // The Recomb2 and SCE variations use an alternate "extra CV" universe
       // since they were generated with smaller MC statistics.
-      // TODO: revisit this if your detVar samples change in the future
+      // Fall back to the regular detVarCV if no extra CV sample is available.
       // BNB only
       if (!useNuMI) {
         if ( ntuple_type == NFT::kDetVarMCSCE
           || ntuple_type == NFT::kDetVarMCRecomb2 )
         {
-          detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCVExtra ).get();
+          if ( detvar_universes_.count( NFT::kDetVarMCCVExtra ) ) {
+            detVar_cv_u = detvar_universes_.at( NFT::kDetVarMCCVExtra ).get();
+          }
         }
       }
 
@@ -1574,9 +1568,11 @@ void SystematicsCalculator::dump_universe_observables(
   const auto* detVar_cv1 = detvar_universes_.at( NFT::kDetVarMCCV ).get();
   this->dump_universe_helper( out_file, *detVar_cv1 );
 
-  out_file << "\ndetVarCV2";
-  const auto* detVar_cv2 = detvar_universes_.at( NFT::kDetVarMCCVExtra ).get();
-  this->dump_universe_helper( out_file, *detVar_cv2 );
+  if ( detvar_universes_.count( NFT::kDetVarMCCVExtra ) ) {
+    out_file << "\ndetVarCV2";
+    const auto* detVar_cv2 = detvar_universes_.at( NFT::kDetVarMCCVExtra ).get();
+    this->dump_universe_helper( out_file, *detVar_cv2 );
+  }
 
   // Organize the universes based on the covariance matrix configuration. Each
   // definition contains at least a name and a type specifier

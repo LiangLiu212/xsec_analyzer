@@ -221,29 +221,48 @@ void set_event_branch_addresses(TTree& etree, AnalysisEvent& ev)
 // match, and into the NC1p-specific members otherwise.
 void set_event_branch_addresses_nc1p(TTree& etree, AnalysisEvent& ev)
 {
-  // --- Truth: reuse existing AnalysisEvent members ---
-  SetBranchAddress(etree, "mc_nupdg",   &ev.mc_nu_pdg_   );
-  SetBranchAddress(etree, "mc_ccnc",    &ev.mc_nu_ccnc_  );
-  SetBranchAddress(etree, "mc_nu_vtxx", &ev.mc_nu_vx_    );
-  SetBranchAddress(etree, "mc_nu_vtxy", &ev.mc_nu_vy_    );
-  SetBranchAddress(etree, "mc_nu_vtxz", &ev.mc_nu_vz_    );
-  SetBranchAddress(etree, "mc_enu",     &ev.mc_nu_energy_);
+  // --- Truth branches: absent in data (BNB/EXT) files ---
+  // evt_gen_nc1p is a computed NC1p truth variable; present only in MC files.
+  // Standard neutrino truth branches (mc_nupdg etc.) exist in BNB/EXT files too
+  // but are filled with dummy values, so they cannot be used as a sentinel.
+  bool has_mc_truth = ( etree.GetBranch("evt_gen_nc1p") != nullptr );
+  if ( has_mc_truth ) {
+    SetBranchAddress(etree, "mc_nupdg",   &ev.mc_nu_pdg_   );
+    SetBranchAddress(etree, "mc_ccnc",    &ev.mc_nu_ccnc_  );
+    SetBranchAddress(etree, "mc_nu_vtxx", &ev.mc_nu_vx_    );
+    SetBranchAddress(etree, "mc_nu_vtxy", &ev.mc_nu_vy_    );
+    SetBranchAddress(etree, "mc_nu_vtxz", &ev.mc_nu_vz_    );
+    SetBranchAddress(etree, "mc_enu",     &ev.mc_nu_energy_);
 
-  // CV weights – stored in the scalar members used later to build the map
-  bool has_mc_wgts = ( etree.GetBranch("mc_wgt_v4a") != nullptr );
-  if ( has_mc_wgts ) {
-    SetBranchAddress(etree, "mc_wgt_v4a",    &ev.spline_weight_    );
-    SetBranchAddress(etree, "mc_wgt_tunedcv",&ev.tuned_cv_weight_  );
+    // CV weights – default to 1.0 when absent (common in older MC files).
+    bool has_mc_wgts = ( etree.GetBranch("mc_wgt_v4a") != nullptr );
+    if ( has_mc_wgts ) {
+      SetBranchAddress(etree, "mc_wgt_v4a",    &ev.spline_weight_    );
+      SetBranchAddress(etree, "mc_wgt_tunedcv",&ev.tuned_cv_weight_  );
+    }
+    else {
+      ev.spline_weight_    = 1.f;
+      ev.tuned_cv_weight_  = 1.f;
+    }
+
+    // NC1p-specific truth members
+    SetBranchAddress(etree, "evt_gen_nc1p",          &ev.evt_gen_nc1p_        );
+    SetBranchAddress(etree, "evt_gen_nc1p_ke",        &ev.evt_gen_nc1p_ke_     );
+    SetBranchAddress(etree, "evt_gen_nc1p_costheta",  &ev.evt_gen_nc1p_costheta_);
+    SetBranchAddress(etree, "evt_gen_nc1p_mom",       &ev.evt_gen_nc1p_mom_    );
+    SetBranchAddress(etree, "evt_gen_nc1p_q2_gen",    &ev.evt_gen_nc1p_q2_gen_ );
+    SetBranchAddress(etree, "mc_n_proton",            &ev.mc_n_proton_         );
+    SetBranchAddress(etree, "mc_mode",                &ev.mc_mode_             );
+
+    if ( etree.GetBranch("mc_n_threshold_muon")   != nullptr )
+      SetBranchAddress(etree, "mc_n_threshold_muon",   &ev.mc_n_threshold_muon_  );
+    if ( etree.GetBranch("mc_n_threshold_proton") != nullptr )
+      SetBranchAddress(etree, "mc_n_threshold_proton", &ev.mc_n_threshold_proton_);
+    if ( etree.GetBranch("mc_n_threshold_pionpm") != nullptr )
+      SetBranchAddress(etree, "mc_n_threshold_pionpm", &ev.mc_n_threshold_pionpm_);
+    if ( etree.GetBranch("mc_n_threshold_pion0")  != nullptr )
+      SetBranchAddress(etree, "mc_n_threshold_pion0",  &ev.mc_n_threshold_pion0_ );
   }
-
-  // --- NC1p-specific truth members ---
-  SetBranchAddress(etree, "evt_gen_nc1p",          &ev.evt_gen_nc1p_        );
-  SetBranchAddress(etree, "evt_gen_nc1p_ke",        &ev.evt_gen_nc1p_ke_     );
-  SetBranchAddress(etree, "evt_gen_nc1p_costheta",  &ev.evt_gen_nc1p_costheta_);
-  SetBranchAddress(etree, "evt_gen_nc1p_mom",       &ev.evt_gen_nc1p_mom_    );
-  SetBranchAddress(etree, "evt_gen_nc1p_q2_gen",    &ev.evt_gen_nc1p_q2_gen_ );
-  SetBranchAddress(etree, "mc_n_proton",            &ev.mc_n_proton_         );
-  SetBranchAddress(etree, "mc_mode",                &ev.mc_mode_             );
 
   // --- Reco selection flag ---
   SetBranchAddress(etree, "evt_reco_1p", &ev.evt_reco_1p_ );
@@ -272,6 +291,19 @@ void set_event_branch_addresses_nc1p(TTree& etree, AnalysisEvent& ev)
   set_object_input_branch_address(etree, "start_dedx_2",    ev.start_dedx_2_v_ );
   set_object_input_branch_address(etree, "total_dedx_2",    ev.total_dedx_2_v_ );
   set_object_input_branch_address(etree, "reco_mom_proton", ev.reco_mom_proton_v_);
+
+  // --- Blip cluster branches (absent from some files) ---
+  bool has_blip = ( etree.GetBranch("blip_x") != nullptr );
+  if ( has_blip ) {
+    set_object_input_branch_address(etree, "blip_x", ev.blip_x_);
+    set_object_input_branch_address(etree, "blip_y", ev.blip_y_);
+    set_object_input_branch_address(etree, "blip_z", ev.blip_z_);
+  }
+  else {
+    ev.blip_x_.reset( nullptr );
+    ev.blip_y_.reset( nullptr );
+    ev.blip_z_.reset( nullptr );
+  }
 
   // --- Systematic weight branches ---
   bool has_genie = ( etree.GetBranch("evtwgt_genie_multisim_weight") != nullptr );
@@ -315,7 +347,10 @@ void set_event_branch_addresses_nc1p(TTree& etree, AnalysisEvent& ev)
 // subsequently (preserving the addresses needed by the output TTree).
 void build_nc1p_weight_map(AnalysisEvent& ev)
 {
-  // Ensure the map object exists (it is default-constructed as empty)
+  // Allocate the map if set_event_branch_addresses_nc1p reset it to nullptr
+  if ( !ev.mc_weights_map_ ) {
+    ev.mc_weights_map_.reset( new std::map<std::string, std::vector<double>>() );
+  }
   auto& wmap = *ev.mc_weights_map_;
 
   // CV weights stored as single-element vectors.
@@ -360,20 +395,23 @@ void build_nc1p_weight_map(AnalysisEvent& ev)
   }
 }
 
-// Helper function to set branch addresses for the output TTree
+// Helper function to set branch addresses for the output TTree.
+// Set is_mc=false for data files to suppress MC-only branches (weights,
+// neutrino truth, backtracked, and MC daughter branches).
 void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
-  bool create = false)
+  bool create = false, bool is_mc = true)
 {
   // Signal definition flags
   set_output_branch_address( out_tree, "is_mc", &ev.is_mc_, create, "is_mc/O" );
 
+  if ( is_mc ) {
   // Event weights
   set_output_branch_address( out_tree, "spline_weight",
     &ev.spline_weight_, create, "spline_weight/F" );
 
   set_output_branch_address( out_tree, "tuned_cv_weight",
     &ev.tuned_cv_weight_, create, "tuned_cv_weight/F" );
-  
+
   set_output_branch_address( out_tree, "ppfx_cv_weight",
     &ev.ppfx_cv_weight_, create, "ppfx_cv_weight/F" );
 
@@ -422,6 +460,7 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
         create );
     }
   }
+  } // end if (is_mc) [weights]
 
   // Backtracked neutrino purity and completeness
   set_output_branch_address( out_tree, "nu_completeness_from_pfp",
@@ -457,6 +496,7 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   set_output_branch_address( out_tree, "reco_nu_vtx_sce_z",
     &ev.nu_vz_, create, "reco_nu_vtx_sce_z/F" );
 
+  if ( is_mc ) {
   // MC truth information for the neutrino
   set_output_branch_address( out_tree, "mc_nu_pdg", &ev.mc_nu_pdg_,
     create, "mc_nu_pdg/I" );
@@ -478,6 +518,7 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
 
   set_output_branch_address( out_tree, "mc_interaction",
     &ev.mc_nu_interaction_type_, create, "mc_interaction/I" );
+  } // end if (is_mc) [neutrino truth]
 
   // PFParticle properties
   set_object_output_branch_address< std::vector<unsigned int> >( out_tree,
@@ -507,6 +548,7 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   set_object_output_branch_address< std::vector<int> >( out_tree,
     "pfnplanehits_Y", ev.pfp_hitsY_, create );
 
+  if ( is_mc ) {
   // Backtracked PFParticle properties
   set_object_output_branch_address< std::vector<int> >( out_tree,
     "backtracked_pdg", ev.pfp_true_pdg_, create );
@@ -522,6 +564,7 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
 
   set_object_output_branch_address< std::vector<float> >( out_tree,
     "backtracked_pz", ev.pfp_true_pz_, create );
+  } // end if (is_mc) [backtracked]
 
   // Shower properties
   // For some ntuples, reconstructed shower information is excluded.
@@ -619,6 +662,7 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
   set_object_output_branch_address< std::vector<float> >( out_tree,
     "trk_llr_pid_score_v", ev.track_llr_pid_score_, create );
 
+  if ( is_mc ) {
   // MC truth information for the final-state primary particles
   set_object_output_branch_address< std::vector<int> >( out_tree, "mc_pdg",
     ev.mc_nu_daughter_pdg_, create );
@@ -634,4 +678,5 @@ void set_event_output_branch_addresses(TTree& out_tree, AnalysisEvent& ev,
 
   set_object_output_branch_address< std::vector<float> >( out_tree, "mc_pz",
     ev.mc_nu_daughter_pz_, create );
+  } // end if (is_mc) [MC daughters]
 }

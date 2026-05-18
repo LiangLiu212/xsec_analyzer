@@ -17,10 +17,11 @@ SelectionBase::SelectionBase( const std::string& sel_name ) {
 
 }
 
-void SelectionBase::setup( TTree* out_tree, bool create_branches ) {
+void SelectionBase::setup( TTree* out_tree, bool create_branches, bool is_mc ) {
 
   out_tree_ = out_tree;
   need_to_create_branches_ = create_branches;
+  is_mc_ = is_mc;
   this->setup_tree();
   this->define_category_map();
   this->define_constants();

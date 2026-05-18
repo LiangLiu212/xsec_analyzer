@@ -37,7 +37,7 @@ NC1p::~NC1p()
 void NC1p::define_constants()
 {
   // True FV matches the old analysis FV used for signal definition
-  this->define_true_FV( 21.5, 234.85, -95.0, 95.0, 21.5, 966.8 );
+  this->define_true_FV( 10.0, 246.35, -96.5, 96.5, 10.0, 1026.8 );
   // Reco proton containment volume (matches old analysis PCV)
   this->define_reco_FV( 10.0, 246.35, -96.35, 96.35, 10.0, 1026.8 );
 
@@ -89,9 +89,13 @@ void NC1p::reset()
 {
   sel_1p_                    = false;
   sel_proton_found_          = false;
+  sel_blip_cut_              = false;
   sel_bdt_passed_            = false;
   sig_nc_interaction_        = false;
+  sig_no_muon_               = false;
+  sig_no_pions_              = false;
   sig_one_proton_above_thresh_ = false;
+  sig_is_nu_pdg_             = false;
   sig_vertex_in_fv_          = false;
   Reco_KE_       = BOGUS;
   Reco_CosTheta_ = BOGUS;
@@ -101,59 +105,64 @@ void NC1p::reset()
   True_CosTheta_ = BOGUS;
   True_Momentum_ = BOGUS;
   True_Q2_       = BOGUS;
-  BDT_Score_     = BOGUS;
-  proton_idx_    = BOGUS_INDEX;
+  BDT_Score_            = BOGUS;
+  proton_idx_           = BOGUS_INDEX;
+  reco_nblip_upstream_  = 0;
 }
 
 void NC1p::define_output_branches()
 {
-  // Selection flags
-  set_branch( sel_1p_,               "sel_1p"               );
-  set_branch( sel_proton_found_,     "sel_proton_found"     );
-  set_branch( sel_bdt_passed_,       "sel_bdt_passed"       );
+  // Selection flags (always present)
+  set_branch( &sel_1p_,               "sel_1p"               );
+  set_branch( &sel_proton_found_,     "sel_proton_found"     );
+  set_branch( &sel_blip_cut_,         "sel_blip_cut"         );
+  set_branch( &sel_bdt_passed_,       "sel_bdt_passed"       );
 
-  // Signal flags
-  set_branch( sig_nc_interaction_,          "sig_nc_interaction"          );
-  set_branch( sig_one_proton_above_thresh_, "sig_one_proton_above_thresh" );
-  set_branch( sig_vertex_in_fv_,            "sig_vertex_in_fv"            );
+  // BDT score and proton index (always present)
+  set_branch( &BDT_Score_,  "BDT_Score"  );
+  set_branch( &proton_idx_, "proton_idx" );
 
-  // BDT score and proton index
-  set_branch( BDT_Score_,  "BDT_Score"  );
-  set_branch( proton_idx_, "proton_idx" );
+  // Reco observables (always present)
+  set_branch( &Reco_KE_,       "Reco_KE"       );
+  set_branch( &Reco_CosTheta_, "Reco_CosTheta" );
+  set_branch( &Reco_Momentum_, "Reco_Momentum" );
+  set_branch( &Reco_Q2_,       "Reco_Q2"       );
 
-  // Reco observables
-  set_branch( Reco_KE_,       "Reco_KE"       );
-  set_branch( Reco_CosTheta_, "Reco_CosTheta" );
-  set_branch( Reco_Momentum_, "Reco_Momentum" );
-  set_branch( Reco_Q2_,       "Reco_Q2"       );
+  // True observables must exist in all files so that UniverseMaker can compile
+  // the bin config expressions (e.g. "NC1p_MC_Signal && NC1p_True_CosTheta...").
+  // For data files these hold BOGUS values but MC_Signal=false makes the true-bin
+  // expressions evaluate to false.
+  set_branch( &True_KE_,       "True_KE"       );
+  set_branch( &True_CosTheta_, "True_CosTheta" );
+  set_branch( &True_Momentum_, "True_Momentum" );
+  set_branch( &True_Q2_,       "True_Q2"       );
 
-  // True observables
-  set_branch( True_KE_,       "True_KE"       );
-  set_branch( True_CosTheta_, "True_CosTheta" );
-  set_branch( True_Momentum_, "True_Momentum" );
-  set_branch( True_Q2_,       "True_Q2"       );
+  if ( is_mc_ ) {
+    // Signal flags — MC-only, not referenced in bin config expressions
+    set_branch( &sig_nc_interaction_,          "sig_nc_interaction"          );
+    set_branch( &sig_one_proton_above_thresh_, "sig_one_proton_above_thresh" );
+    set_branch( &sig_vertex_in_fv_,            "sig_vertex_in_fv"            );
+  }
 }
 
 bool NC1p::define_signal( AnalysisEvent* ev )
 {
-  // is_mc_ is set from file_type in ProcessNTuples.C before apply_selection()
-  // is called. For the old format, MC truth branches are only valid for MC
-  // files, so we check is_mc_ to avoid reading garbage.
   if ( !ev->is_mc_ ) return false;
 
-  // NC interaction
-  sig_nc_interaction_ = ( ev->mc_nu_ccnc_ == NEUTRAL_CURRENT );
-  if ( !sig_nc_interaction_ ) return false;
+  sig_nc_interaction_          = ( ev->mc_nu_ccnc_ == NEUTRAL_CURRENT );
+  sig_no_muon_                 = ( ev->mc_n_threshold_muon_ == 0 );
+  sig_no_pions_                = ( (ev->mc_n_threshold_pionpm_ + ev->mc_n_threshold_pion0_) == 0 );
+  sig_one_proton_above_thresh_ = ( ev->mc_n_threshold_proton_ == 1 );
+  sig_is_nu_pdg_               = ( ev->mc_nu_pdg_ == 14 || ev->mc_nu_pdg_ == -14 );
 
-  // Vertex in true FV
-  sig_vertex_in_fv_ = point_inside_FV( this->true_FV(),
-    ev->mc_nu_vx_, ev->mc_nu_vy_, ev->mc_nu_vz_ );
-  if ( !sig_vertex_in_fv_ ) return false;
+  const bool in_x = ( ev->mc_nu_vx_ > 10.f && ev->mc_nu_vx_ < 246.35f );
+  const bool in_y = ( ev->mc_nu_vy_ > -96.5f && ev->mc_nu_vy_ < 96.5f );
+  const bool in_z = ( ev->mc_nu_vz_ > 10.f && ev->mc_nu_vz_ < 1026.8f );
+  sig_vertex_in_fv_            = ( in_x && in_y && in_z );
 
-  // Exactly one above-threshold proton (uses pre-computed flag from ntuple)
-  sig_one_proton_above_thresh_ = ( ev->evt_gen_nc1p_ == 1 );
-
-  return sig_nc_interaction_ && sig_vertex_in_fv_ && sig_one_proton_above_thresh_;
+  const bool is_nc1p = sig_nc_interaction_ && sig_no_muon_ && sig_no_pions_
+                       && sig_one_proton_above_thresh_;
+  return is_nc1p && sig_vertex_in_fv_ && sig_is_nu_pdg_;
 }
 
 bool NC1p::selection( AnalysisEvent* ev )
@@ -223,20 +232,20 @@ bool NC1p::selection( AnalysisEvent* ev )
     // Identical to the inner loop in make_tree.C lines 461-467.
     if ( n_trk > 1 ) {
       for ( int j = 0; j < n_trk; ++j ) {
+        if ( j == i ) continue;  // skip self — mirrors make_tree.C
         float d1 = std::sqrt( std::pow(sx - sx_v.at(j), 2)
                             + std::pow(sy - sy_v.at(j), 2)
                             + std::pow(sz - sz_v.at(j), 2) );
         float d2 = std::sqrt( std::pow(sx - ex_v.at(j), 2)
                             + std::pow(sy - ey_v.at(j), 2)
                             + std::pow(sz - ez_v.at(j), 2) );
-        if ( d1 > 0.f && d2 > 0.f ) {
-          float dmin = ( d1 < d2 ) ? d1 : d2;
-          if ( dmin < trkdis ) trkdis = dmin;
-        }
+        float dmin = ( d1 < d2 ) ? d1 : d2;
+        if ( dmin < trkdis ) trkdis = dmin;
       }
     }
 
     proton_idx_ = i;
+    break;  // greedy: take the first passing candidate, mirrors make_tree.C
   }
 
   sel_proton_found_ = ( proton_idx_ != BOGUS_INDEX );
@@ -244,7 +253,30 @@ bool NC1p::selection( AnalysisEvent* ev )
 
   const int ip = proton_idx_;
 
-  // --- Cut 3: BDT ---
+  // --- Cut 3: upstream blip cut ---
+  // Reject events with more than 1 blip cluster that is: inside a geometric
+  // dead-wire sub-region, within 50 cm of the proton track start, and upstream
+  // (blip z < proton start z).  Mirrors the nblip_5 cut in make_tree.C.
+  reco_nblip_upstream_ = 0;
+  if ( ev->blip_x_ && !ev->blip_x_->empty() ) {
+    const float px = sx_v.at(ip), py = sy_v.at(ip), pz = sz_v.at(ip);
+    const int n_blip = static_cast<int>( ev->blip_x_->size() );
+    for ( int k = 0; k < n_blip; ++k ) {
+      const float bx = ev->blip_x_->at(k);
+      const float by = ev->blip_y_->at(k);
+      const float bz = ev->blip_z_->at(k);
+      if ( blip_vertex_in_fv(bx, by, bz) > 0 ) {
+        float disb = std::sqrt( std::pow(px - bx, 2)
+                              + std::pow(py - by, 2)
+                              + std::pow(pz - bz, 2) );
+        if ( disb < 50.f && bz < pz ) ++reco_nblip_upstream_;
+      }
+    }
+  }
+  sel_blip_cut_ = ( reco_nblip_upstream_ <= 1 );
+  if ( !sel_blip_cut_ ) return false;
+
+  // --- Cut 4: BDT ---
   // Populate BDT input variables exactly as make_tree.C does.
   // NOTE: dedx_end2 in the BDT = start_dedx_2 branch (historical naming).
   //       start_y/z and end_y/z use the non-f2 values (overwritten in make_tree.C).
@@ -290,6 +322,25 @@ void NC1p::compute_true_observables( AnalysisEvent* ev )
   True_CosTheta_ = ev->evt_gen_nc1p_costheta_;
   True_Momentum_ = ev->evt_gen_nc1p_mom_;
   True_Q2_       = ev->evt_gen_nc1p_q2_gen_;
+}
+
+int NC1p::blip_vertex_in_fv( float x, float y, float z )
+{
+  // Replicates VertexIsInFV from make_tree.C.
+  // Returns -1 (outside TPC FV border), 0 (purely inside FV),
+  // or 1-5 (inside a geometric dead-wire sub-region).
+  int result = 0;
+  if ( x < 10.f   || x > 246.35f ) result = -1;
+  if ( y < -96.35f|| y >  96.35f ) result = -1;
+  if ( z < 10.f   || z > 1026.8f ) result = -1;
+
+  if ( y - 0.6f*z > -186.f && y - 0.6f*z < -120.f )               result = 1;
+  if ( y - 0.6f*z < -207.f && y + 0.6f*z < 434.f && z < 700.f )   result = 2;
+  if ( z > 740.f && y + 0.6f*z > 454.f )                           result = 3;
+  if ( y + 0.6f*z > 454.f && z < 700.f )                           result = 4;
+  if ( y + 0.6f*z < 434.f && z > 740.f )                           result = 5;
+
+  return result;
 }
 
 int NC1p::categorize_event( AnalysisEvent* ev )

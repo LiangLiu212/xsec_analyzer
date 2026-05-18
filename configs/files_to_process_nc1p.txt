@@ -1,31 +1,86 @@
-# Format file name run id (to load BDT weights)
+# Format: file_name file_type run_id
+# file_type must start with "nc1p_" for old-format ntuple detection.
+# nc1p_BNB and nc1p_EXT are treated as data (is_mc = false); all others as MC.
+# run_id is passed to ReprocessNTuples.sh to select the correct BDT weights
+# (e.g. run_id=1 → NC1p_1 → weights_1/TMVAClassification_BDTG.weights.xml).
 #
-# CV files
+# ---- Run 1 ----
 #
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_bnb.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_extbnb.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_dirt.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_bnb.root nc1p_BNB 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_extbnb.root nc1p_EXT 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_dirt.root nc1p_dirtMC 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp.root nc1p_numuMC 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_attenuation.root nc1p_ly_attenuation 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_down.root nc1p_ly_down 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_rayleigh.root nc1p_ly_rayleigh 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_default.root nc1p_detVarCV 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_flux.root nc1p_flux 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_g4.root nc1p_g4 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_pm.root nc1p_genie_xsec 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_1.root nc1p_genie_xsec 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_2.root nc1p_genie_xsec 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_3.root nc1p_genie_xsec 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_4.root nc1p_genie_xsec 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_5.root nc1p_genie_xsec 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_fsi.root nc1p_genie_fsi 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_pm.root nc1p_genie_pm 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_recomb2.root nc1p_recomb2 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_sce.root nc1p_sce 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_xz.root nc1p_wiremod_angle_xz 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_yz.root nc1p_wiremod_angle_yz 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_x.root nc1p_wiremod_x 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_yz.root nc1p_wiremod_yz 1
 #
-# Systematic files
+# ---- Run 2 ----
 #
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_attenuation.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_down.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_ly_rayleigh.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_default.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_flux.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_g4.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_pm.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_1.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_2.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_3.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_4.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie320_precompound_hadronhp_genie_xsec_5.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_fsi.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_overlay_genie_pm.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_recomb2.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_sce.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_xz.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_angle_yz.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_x.root 1
-/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r1_wiremod_yz.root 1
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_bnb.root nc1p_BNB 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_extbnb.root nc1p_EXT 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_dirt.root nc1p_dirtMC 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp.root nc1p_numuMC 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_ly_attenuation.root nc1p_ly_attenuation 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_ly_down.root nc1p_ly_down 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_ly_rayleigh.root nc1p_ly_rayleigh 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_default.root nc1p_detVarCV 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_flux.root nc1p_flux 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_g4.root nc1p_g4 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_pm.root nc1p_genie_xsec 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_1.root nc1p_genie_xsec 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_2.root nc1p_genie_xsec 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_3.root nc1p_genie_xsec 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_4.root nc1p_genie_xsec 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie320_precompound_hadronhp_genie_xsec_5.root nc1p_genie_xsec 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie_fsi.root nc1p_genie_fsi 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_overlay_genie_pm.root nc1p_genie_pm 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_recomb2.root nc1p_recomb2 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_sce.root nc1p_sce 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_angle_xz.root nc1p_wiremod_angle_xz 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_angle_yz.root nc1p_wiremod_angle_yz 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_x.root nc1p_wiremod_x 2
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r2_wiremod_yz.root nc1p_wiremod_yz 2
+#
+# ---- Run 3 ----
+#
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_bnb.root nc1p_BNB 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_extbnb.root nc1p_EXT 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_dirt.root nc1p_dirtMC 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp.root nc1p_numuMC 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_ly_attenuation.root nc1p_ly_attenuation 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_ly_down.root nc1p_ly_down 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_ly_rayleigh.root nc1p_ly_rayleigh 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_default.root nc1p_detVarCV 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_flux.root nc1p_flux 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_g4.root nc1p_g4 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_pm.root nc1p_genie_xsec 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_1.root nc1p_genie_xsec 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_2.root nc1p_genie_xsec 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_3.root nc1p_genie_xsec 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_4.root nc1p_genie_xsec 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie320_precompound_hadronhp_genie_xsec_5.root nc1p_genie_xsec 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie_fsi.root nc1p_genie_fsi 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_overlay_genie_pm.root nc1p_genie_pm 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_recomb2.root nc1p_recomb2 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_sce.root nc1p_sce 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_angle_xz.root nc1p_wiremod_angle_xz 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_angle_yz.root nc1p_wiremod_angle_yz 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_x.root nc1p_wiremod_x 3
+/exp/uboone/data/users/renlu23/NCE/Spring_2021/CV/r3_wiremod_yz.root nc1p_wiremod_yz 3

@@ -22,7 +22,7 @@ public:
 
   virtual ~SelectionBase() = default;
 
-  void setup( TTree* out_tree, bool create_branches = true );
+  void setup( TTree* out_tree, bool create_branches = true, bool is_mc = true );
   void apply_selection( AnalysisEvent* event );
   void summary();
 
@@ -144,6 +144,7 @@ protected:
 
   TTree* out_tree_;
   bool need_to_create_branches_;
+  bool is_mc_ = true;
 
   STVTools stv_tools_;
 

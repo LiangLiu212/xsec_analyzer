@@ -15,9 +15,9 @@ void NC1pBinScheme::DefineBlocks() {
   selection_name_    = "NC1p";
   out_tdir_name_     = "nc1p_xsec";
 
-  // ---- Block 1: proton kinetic energy ----
-  // DefinePRDCVHistos bins: xbin_ke = {0,0.05,0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.6}
-  std::vector< double > ke_edges = { 0., 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6 };
+  // ---- Block 0: proton kinetic energy ----
+  // Selection requires KE >= 0.05 GeV; lower edge 0.05 matches old analysis.
+  std::vector< double > ke_edges = { 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6 };
 
   Block1D* ke_true = new Block1D( "NC1p_True_KE",
     "Proton Kinetic Energy (GeV)", "T_{p}\\,(\\mathrm{GeV})",
@@ -29,10 +29,9 @@ void NC1pBinScheme::DefineBlocks() {
 
   vect_block.emplace_back( ke_true, ke_reco );
 
-  // ---- Block 2: proton cos(theta) ----
-  // DefinePRDCVHistos bins: xbin_costh = {-1,0,0.3,0.5,0.6,0.7,0.8,0.9,1,1.1}
-  // (upper edge 1.1 absorbs events at costheta == 1 identically to old ROOT histos)
-  std::vector< double > costh_edges = { -1., 0., 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1., 1.1 };
+  // ---- Block 1: proton cos(theta) ----
+  // Selection requires cos(theta_f2) > 0; upper edge 1.0 matches old analysis.
+  std::vector< double > costh_edges = { 0., 0.3, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 };
 
   Block1D* costh_true = new Block1D( "NC1p_True_CosTheta",
     "Proton cos#theta", "\\cos\\theta_{p}",
@@ -44,7 +43,7 @@ void NC1pBinScheme::DefineBlocks() {
 
   vect_block.emplace_back( costh_true, costh_reco );
 
-  // ---- Block 3: proton Q2 ----
+  // ---- Block 2: proton Q2 ----
   // DefineCVHistos: 11 uniform bins [0, 1.1] GeV^2  (binnum=11, binmin=0, binmax=1.1)
   std::vector< double > q2_edges = {
     0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1
@@ -60,7 +59,7 @@ void NC1pBinScheme::DefineBlocks() {
 
   vect_block.emplace_back( q2_true, q2_reco );
 
-  // ---- Block 4: proton momentum ----
+  // ---- Block 3: proton momentum ----
   // DefineCVHistos xbin_p: {0.2,0.3,0.4,0.5,0.6,0.7,0.8,1,1.2,1.4} GeV/c
   std::vector< double > mom_edges = {
     0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0, 1.2, 1.4
