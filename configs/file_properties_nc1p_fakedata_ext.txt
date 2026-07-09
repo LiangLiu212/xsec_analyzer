@@ -3,18 +3,17 @@
 #
 # Format: file_name run file_type [triggers POT (for data only)]
 #
-# Beam-off data: zero-entry stv trees (CloneTree(0) copies of the real EXT
-# files) so the EXT contribution is exactly 0 and the fake data is purely the
-# CV prediction. This is the degenerate (EXT = 0) variant of the closure
-# test; the preferred variant is file_properties_nc1p_fakedata_ext.txt, which
-# uses the real EXT files. In fake-data mode the framework adds the
-# trigger-scaled EXT estimate to the fake BNB data
-# (SystematicsCalculator::build_universes, "using_fake_data" block), so the
-# background subtraction runs with nonzero content and still cancels exactly.
-# Trigger counts kept at the real values (they only scale empty histograms).
-/home/feanor/nc1p/dev_v26_04_24/data/xsec-ana-r1_extbnb_empty.root 1 extBNB 43162097 0
-/home/feanor/nc1p/dev_v26_04_24/data/xsec-ana-r2_extbnb_empty.root 2 extBNB 151507351 0
-/home/feanor/nc1p/dev_v26_04_24/data/xsec-ana-r3_extbnb_empty.root 3 extBNB 166840107 0
+# Beam-off data: the REAL EXT stv files with their REAL trigger counts.
+# In fake-data mode SystematicsCalculator::build_universes AUTOMATICALLY adds
+# the trigger-scaled EXT histogram to the fake BNB data (see the
+# "using_fake_data" block, src/utils/SystematicsCalculator.cxx ~line 891), so
+# the fake measurement = MC CV + EXT estimate and the standard subtraction
+# (data - EXT - MC background) cancels exactly. This exercises the genuine
+# EXT-subtraction path with nonzero content and nontrivial trigger scales
+# (~2.845/0.917/0.788 for r1/r2/r3); no zero-entry EXT files are needed.
+/home/feanor/nc1p/dev_v26_04_24/data/xsec-ana-r1_extbnb.root 1 extBNB 43162097 0
+/home/feanor/nc1p/dev_v26_04_24/data/xsec-ana-r2_extbnb.root 2 extBNB 151507351 0
+/home/feanor/nc1p/dev_v26_04_24/data/xsec-ana-r3_extbnb.root 3 extBNB 166840107 0
 #
 # Beam-on "data" = fake data: symlinks to the overlay CV stv files.
 # POT = exact summed_pot of each overlay file, so the per-run MC normalization
