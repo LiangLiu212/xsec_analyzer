@@ -1,0 +1,6 @@
+UnivFile /home/feanor/nc1p/dev_v26_04_24/data/Universes_fakedata.root
+SystFile ./configs/systcalc.conf
+FPFile ./configs/file_properties_nc1p_fakedata.txt
+Unfold DAgostini fm 0.025
+Prediction uBTune "MicroBooNE Tune" univ CV
+Prediction FakeData "Fake data truth" univ FakeData
